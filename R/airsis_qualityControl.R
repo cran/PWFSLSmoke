@@ -18,6 +18,12 @@
 
 airsis_qualityControl <- function(df, ...) {
   
+  # Sanity check -- row count
+  if ( nrow(df) == 0 ) {
+    logger.error("Unable to perform QC: dataframe empty")
+    stop(paste0("Unable to perform QC: dataframe empty"))
+  }
+  
   # Sanity check -- df must have a monitorType
   if ( !'monitorType' %in% names(df) ) {
     logger.error("No 'monitorType' column found in 'df' dataframe with columns: %s", paste0(names(df), collapse=", "))
@@ -38,8 +44,8 @@ airsis_qualityControl <- function(df, ...) {
   
   if ( monitorType == 'BAM1020' ) {
     
-    logger.warn("Dataframe contains %s data -- no QC available, original dataframe being returned", monitorType)
-    
+    df <- airsis_BAM1020QualityControl(df, ...)
+
   } else if ( monitorType == 'EBAM' ) {
     
     df <- airsis_EBAMQualityControl(df, ...)

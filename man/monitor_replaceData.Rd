@@ -7,7 +7,7 @@
 monitor_replaceData(ws_monitor, filter, value)
 }
 \arguments{
-\item{ws_monitor}{emph{ws_monitor} object}
+\item{ws_monitor}{\emph{ws_monitor} object}
 
 \item{filter}{an \R{R} expression used to identify values for replacement}
 
@@ -30,4 +30,3 @@ wa <- monitor_subset(Northwest_Megafires, stateCodes='WA')
 wa_zero <- monitor_replaceData(wa, data < 0, 0)
 }
 \keyword{ws_monitor}
-

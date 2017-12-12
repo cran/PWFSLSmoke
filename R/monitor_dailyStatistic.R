@@ -1,12 +1,12 @@
 #' @keywords ws_monitor
 #' @export
 #' @title Calculate Daily Statistics for each Monitor in a ws_monitor Object
-#' @param ws_monitor emph{ws_monitor} object
+#' @param ws_monitor \emph{ws_monitor} object
 #' @param FUN function used to collapse a day's worth of data into a single number for each monitor in the ws_monitor object
 #' @param dayStart one of \code{sunset|midnight|sunrise}
 #' @param na.rm logical value indicating whether NA values should be ignored
 #' @param minHours minimum number of valid data hours required to calculate each daily statistic
-#' @return A emph{ws_monitor} object with daily statistics for the local timezone.
+#' @return A \emph{ws_monitor} object with daily statistics for the local timezone.
 #' @description Calculates daily statistics for each monitor in \code{ws_monitor}.
 #' @details Sunrise and sunset times are calculated based on the first monitor encountered.
 #' This should be accurate enough for all use cases involving co-located monitors. Monitors
@@ -98,7 +98,7 @@ monitor_dailyStatistic <- function(ws_monitor, FUN=get("mean"), dayStart="midnig
   # Restore POSIXct daily datetimes
   df$datetime <- meanDF$datetime
   
-  # Set df$datetime to noon for each day
+  # Set df$datetime to the beginning of each day
   lubridate::hour(df$datetime) <- 00
   lubridate::minute(df$datetime) <- 00
   lubridate::second(df$datetime) <- 00

@@ -3,7 +3,8 @@
 #' @title Ingest WRCC Dump File and Create ws_monitor Object
 #' @param filepath absolute path of the WRCC dump file
 #' @param clusterDiameter diameter in meters used to determine the number of clusters (see \code{addClustering})
-#' @return A emph{ws_monitor} object with WRCC data.
+#' @param existingMeta existing 'meta' dataframe from which to obtain metadata for known monitor deployments
+#' @return A \emph{ws_monitor} object with WRCC data.
 #' @description Ingests a WRCC dump file and converts
 #' it into a quality controlled, metadata enhanced \emph{ws_monitor} object
 #' ready for use with all \code{monitor_~} functions.
@@ -26,8 +27,10 @@
 #' @seealso \code{\link{wrcc_createMetaDataframe}}
 #' @seealso \code{\link{wrcc_createDataDataframe}}
 
-wrccDump_createMonitorObject <- function(filepath, clusterDiameter=1000) {
+wrccDump_createMonitorObject <- function(filepath, clusterDiameter=1000, existingMeta=NULL) {
 
+  logger.info(" ----- wrccDump_createMonitorObject() ----- ")
+  
   logger.debug("Reading data ...")
   fileString <- readr::read_file(filepath)
   
@@ -46,8 +49,15 @@ wrccDump_createMonitorObject <- function(filepath, clusterDiameter=1000) {
     df <- dfList[[name]]
     
     # Apply monitor-appropriate QC to the dataframe
-    logger.info("Applying QC logic ...")
-    df <- wrcc_qualityControl(df)
+    logger.debug("Applying QC logic ...")
+    result <- try( df <- wrcc_qualityControl(df),
+                   silent=TRUE ) # don't show errors
+    
+    if ( "try-error" %in% class(result) ) {
+      err_msg <- geterrmessage()
+      logger.warn(err_msg)
+      next
+    }
     
     # See if anything gets through QC
     if ( nrow(df) == 0 ) {
@@ -56,22 +66,26 @@ wrccDump_createMonitorObject <- function(filepath, clusterDiameter=1000) {
     }
     
     # Add clustering information to identify unique deployments
-    logger.info("Clustering ...")
+    logger.debug("Clustering ...")
     df <- addClustering(df, lonVar='GPSLon', latVar='GPSLat', clusterDiameter=clusterDiameter)
     
     # Create 'meta' dataframe of site properties organized as monitorID-by-property
     # NOTE:  This step will create a uniformly named set of properties and will
     # NOTE:  add site-specific information like timezone, elevation, address, etc.
-    logger.info("Creating 'meta' dataframe ...")
-    meta <- wrcc_createMetaDataframe(df)
+    logger.debug("Creating 'meta' dataframe ...")
+    meta <- wrcc_createMetaDataframe(df, existingMeta)
     
     # Create 'data' dataframe of PM2.5 values organized as time-by-monitorID
-    logger.info("Creating 'data' dataframe ...")
+    logger.debug("Creating 'data' dataframe ...")
     data <- wrcc_createDataDataframe(df, meta)
     
     # Create the 'ws_monitor' object
     ws_monitor <- list(meta=meta, data=data)
     ws_monitor <- structure(ws_monitor, class = c("ws_monitor", "list"))
+
+    # Reset all negative values that made it through QC to zero
+    logger.debug("Reset negative valus to zero ...")
+    ws_monitor <- monitor_replaceData(ws_monitor, data < 0, 0)
     
     monitorList[[name]] <- ws_monitor
     

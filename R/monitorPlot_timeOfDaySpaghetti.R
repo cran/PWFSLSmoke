@@ -2,7 +2,7 @@
 #' @export
 #' @import graphics
 #' @title Create Time of Day Spaghetti Plot
-#' @param ws_monitor emph{ws_monitor} object
+#' @param ws_monitor \emph{ws_monitor} object
 #' @param monitorID id for a specific monitor in the ws_monitor object
 #' @param ylim y limits for the plot
 #' @param tlim optional vector with start and end times (integer or character representing YYYYMMDD[HH])
@@ -122,7 +122,8 @@ monitorPlot_timeOfDaySpaghetti <- function(ws_monitor,
   # Add a title
   if ( is.null(title) ) {
     mtext(bquote(paste('Daily PM'[2.5],' Values and ', .(dayCount),'-day Mean')), line=2, cex=1.5)
-    mtext(paste(strftime(df$localTime[1], '%b. %d - '), strftime(utils::tail(df$localTime,1), '%b. %d %Y')), line=.5, cex=1.5)
+    mtext(paste(strftime(df$localTime[1], '%b. %d - ', tz=timezone),
+                strftime(utils::tail(df$localTime,1), '%b. %d %Y'), tz=timezone), line=.5, cex=1.5)
   } else {
     title(title)
   }
@@ -131,7 +132,7 @@ monitorPlot_timeOfDaySpaghetti <- function(ws_monitor,
   if ( shadedNight ) {
     
     # Get the sunrise/sunset information
-    ti <- timeInfo(localTime, lon=mon$meta$longitude, lat=mon$meta$latitude, timezone=timezone)
+    ti <- timeInfo(localTime, longitude=mon$meta$longitude, latitude=mon$meta$latitude, timezone=timezone)
     
     # Extract the middle row
     ti <- ti[round(nrow(ti)/2),]

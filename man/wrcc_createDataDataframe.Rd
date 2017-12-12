@@ -12,7 +12,7 @@ wrcc_createDataDataframe(df, meta)
 \item{meta}{WRCC meta dataframe created by \code{wrcc_createMetaDataframe()}}
 }
 \value{
-A \code{data} dataframe for use in a emph{ws_monitor} object.
+A \code{data} dataframe for use in a \emph{ws_monitor} object.
 }
 \description{
 After quality control has been applied to an WRCC dataframe,
@@ -24,4 +24,3 @@ contains a \code{POSIXct} time in UTC. Additional columns contain data
 for each separate deployment of a monitor.
 }
 \keyword{WRCC}
-

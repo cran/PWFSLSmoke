@@ -6,11 +6,11 @@
 \usage{
 monitorGoogleMap(ws_monitor, slice = get("max"), breaks = AQI$breaks_24,
   colors = AQI$colors, width = 640, height = 640, centerLon = NULL,
-  centerLat = NULL, zoom = NULL, maptype = "terain", grayscale = FALSE,
+  centerLat = NULL, zoom = NULL, maptype = "roadmap", grayscale = FALSE,
   map = NULL, ...)
 }
 \arguments{
-\item{ws_monitor}{emph{ws_monitor} object}
+\item{ws_monitor}{\emph{ws_monitor} object}
 
 \item{slice}{either a time index or a function used to collapse the time axis -- defautls to \code{get('max')}}
 
@@ -40,7 +40,7 @@ monitorGoogleMap(ws_monitor, slice = get("max"), breaks = AQI$breaks_24,
 A \emph{MyMap} RgoogleMaps map object object that can serve as a base plot.
 }
 \description{
-Creates a Google map of a emph{ws_monitor} object using the \pkg{RgoogleMaps} package.
+Creates a Google map of a \emph{ws_monitor} object using the \pkg{RgoogleMaps} package.
 
 If \code{centerLon}, \code{centerMap} or \code{zoom} are not specified, appropriate values
 will be calcualted using data from the \code{ws_monitor$meta} dataframe.
@@ -53,4 +53,3 @@ Spokane <- monitor_subset(Spokane, tlim=c(20150815, 20150831))
 monitorGoogleMap(Spokane)
 }
 \keyword{ws_monitor}
-

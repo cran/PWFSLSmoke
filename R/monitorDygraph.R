@@ -1,7 +1,7 @@
 #' @keywords ws_monitor
 #' @export
 #' @title Create Interactive Time Series Plot
-#' @param ws_monitor emph{ws_monitor} object
+#' @param ws_monitor \emph{ws_monitor} object
 #' @param title title text
 #' @param ylab title for the y axis
 #' @param tlim optional vector with start and end times (integer or character representing YYYYMMDD[HH])
@@ -12,7 +12,10 @@
 #' @examples
 #' \dontrun{
 #' airnow <- airnow_load(20140913, 20141010)
-#' King_Fire <- monitor_subsetByDistance(airnow, lon=-120.604, lat=38.782, radius=50)
+#' King_Fire <- monitor_subsetByDistance(airnow,
+#'                                       longitude=-120.604,
+#'                                       latitude=38.782,
+#'                                       radius=50)
 #' monitorDygraph(King_Fire, title='KingFire/California/2014', rollPeriod=3)
 #' } 
 

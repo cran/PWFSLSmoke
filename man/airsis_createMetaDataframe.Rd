@@ -4,13 +4,15 @@
 \alias{airsis_createMetaDataframe}
 \title{Create AIRSIS Site Location Metadata Dataframe}
 \usage{
-airsis_createMetaDataframe(df)
+airsis_createMetaDataframe(df, existingMeta = NULL)
 }
 \arguments{
 \item{df}{single site AIRSIS dataframe after metadata enhancement}
+
+\item{existingMeta}{existing 'meta' dataframe from which to obtain metadata for known monitor deployments}
 }
 \value{
-A \code{meta} dataframe for use in a emph{ws_monitor} object.
+A \code{meta} dataframe for use in a \emph{ws_monitor} object.
 }
 \description{
 After an AIRSIS dataframe has been enhanced with 
@@ -40,4 +42,3 @@ columns in the returned \code{meta} dataframe is:
 \code{\link{addMazamaMetadata}}
 }
 \keyword{AIRSIS}
-

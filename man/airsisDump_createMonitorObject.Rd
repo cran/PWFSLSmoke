@@ -4,15 +4,18 @@
 \alias{airsisDump_createMonitorObject}
 \title{Ingest AIRSIS Dump File and Create ws_monitor Object}
 \usage{
-airsisDump_createMonitorObject(filepath, clusterDiameter = 1000)
+airsisDump_createMonitorObject(filepath, clusterDiameter = 1000,
+  existingMeta = NULL)
 }
 \arguments{
 \item{filepath}{absolute path of the AIRSIS dump file}
 
 \item{clusterDiameter}{diameter in meters used to determine the number of clusters (see \code{addClustering})}
+
+\item{existingMeta}{existing 'meta' dataframe from which to obtain metadata for known monitor deployments}
 }
 \value{
-A emph{ws_monitor} object with AIRSIS data.
+A \emph{ws_monitor} object with AIRSIS data.
 }
 \description{
 Ingests an  AIRSIS dump file and converts
@@ -45,4 +48,3 @@ Each dump file must contain data for only one type of monitor, e.g. EBAM or E-Sa
 \code{\link{airsis_createDataDataframe}}
 }
 \keyword{internal}
-

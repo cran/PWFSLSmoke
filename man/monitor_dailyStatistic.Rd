@@ -8,7 +8,7 @@ monitor_dailyStatistic(ws_monitor, FUN = get("mean"), dayStart = "midnight",
   na.rm = TRUE, minHours = 24)
 }
 \arguments{
-\item{ws_monitor}{emph{ws_monitor} object}
+\item{ws_monitor}{\emph{ws_monitor} object}
 
 \item{FUN}{function used to collapse a day's worth of data into a single number for each monitor in the ws_monitor object}
 
@@ -19,7 +19,7 @@ monitor_dailyStatistic(ws_monitor, FUN = get("mean"), dayStart = "midnight",
 \item{minHours}{minimum number of valid data hours required to calculate each daily statistic}
 }
 \value{
-A emph{ws_monitor} object with daily statistics for the local timezone.
+A \emph{ws_monitor} object with daily statistics for the local timezone.
 }
 \description{
 Calculates daily statistics for each monitor in \code{ws_monitor}.
@@ -48,4 +48,3 @@ addAQILegend("topleft", lwd=1, pch=NULL)
 title("Twisp, Washington Daily Mean PM2.5, 2015")
 }
 \keyword{ws_monitor}
-

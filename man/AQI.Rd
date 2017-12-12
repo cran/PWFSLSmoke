@@ -16,11 +16,10 @@ AQI breaks and associated names and colors
 
 
 
-AQI breaks and colors colors are defined in
+AQI breaks and colors are defined in
 \url{https://www3.epa.gov/airnow/aqi-technical-assistance-document-may2016.pdf}
 }
 \note{
 The low end of each break category is used as the breakpoint.
 }
 \keyword{datasets}
-

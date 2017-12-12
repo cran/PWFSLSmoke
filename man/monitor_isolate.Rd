@@ -8,7 +8,7 @@ monitor_isolate(ws_monitor, xlim = NULL, ylim = NULL, tlim = NULL,
   monitorIDs = NULL, stateCodes = NULL, timezone = "UTC")
 }
 \arguments{
-\item{ws_monitor}{emph{ws_monitor} object}
+\item{ws_monitor}{\emph{ws_monitor} object}
 
 \item{xlim}{optional vector with low and high longitude limits}
 
@@ -48,4 +48,3 @@ names(monitorList)
 \link{monitor_subset}
 }
 \keyword{ws_monitor}
-

@@ -11,7 +11,7 @@ monitorPlot_rollingMean(ws_monitor, monitorID = NULL, width = 3,
   showLegend = TRUE)
 }
 \arguments{
-\item{ws_monitor}{emph{ws_monitor} object}
+\item{ws_monitor}{\emph{ws_monitor} object}
 
 \item{monitorID}{monitor ID for a specific monitor in the ws_monitor object (optional if only one monitor
 in the ws_monitor object)}
@@ -66,4 +66,3 @@ Roseburg <- monitor_subset(N_M, tlim=c(20150821, 20150831),
 monitorPlot_rollingMean(Roseburg, shadedNight=TRUE)
 }
 \keyword{ws_monitor}
-

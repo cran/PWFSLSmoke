@@ -10,6 +10,7 @@
 #' @param valid_AT range of valid AT.C. values
 #' @param valid_RHi range of valid RHi... values
 #' @param valid_Conc range of valid Conc.mg.m3. values
+#' @param flagAndKeep flag, rather then remove, bad data during the QC process
 #' @description Perform various QC measures on AIRSIS E-Sampler data.
 #' 
 #' The following columns of data are tested against valid ranges:
@@ -20,7 +21,7 @@
 #' \item{\code{ConcHr}}
 #' }
 #' 
-#' A \code{POSIXct datetime} column (UTC) is also added based on \code{Date.Time.GMT}.
+#' A \code{POSIXct datetime} column (UTC) is also added based on \code{TimeStamp}.
 #' 
 #' @return Cleaned up dataframe of AIRSIS monitor data.
 #' @seealso \code{\link{airsis_qualityControl}}
@@ -33,7 +34,8 @@ airsis_ESAMQualityControl <- function(df,
                                       valid_Flow = c(1.999,2.001),     # anything other than 2 is bad
                                       valid_AT = c(-Inf,150),
                                       valid_RHi = c(-Inf,55),
-                                      valid_Conc = c(-Inf,984)) {
+                                      valid_Conc = c(-Inf,5000),
+                                      flagAndKeep = FALSE) {
   
   # TODO:  What about Alarm?
   
@@ -51,17 +53,42 @@ airsis_ESAMQualityControl <- function(df,
   
   # Handle various missing value flags
   
+  # ----- Setup for flagAndKeep argument utility ------------------------------
+  
+  if ( flagAndKeep ) {
+    # verb for logging messages
+    verb <- "Flagging"
+    
+    df$rowID <- as.integer(rownames(df))
+    
+    # duplicate df and add columns for flags
+    dfFlagged <- df
+    dfFlagged$QCFlag_anyBad <- FALSE
+    dfFlagged$QCFlag_reasonCode <- NA
+    dfFlagged$QCFlag_badLon <- FALSE
+    dfFlagged$QCFlag_badLat <- FALSE
+    dfFlagged$QCFlag_badType <- FALSE # no type info for ESAMs
+    dfFlagged$QCFlag_badFlow <- FALSE
+    dfFlagged$QCFlag_badAT <- FALSE
+    dfFlagged$QCFlag_badRHi <- FALSE
+    dfFlagged$QCFlag_badConcHr <- FALSE
+    dfFlagged$QCFlag_badDateAndTime <- FALSE
+    dfFlagged$QCFlag_duplicateHr <- FALSE
+  } else {
+    # verb for logging messages
+    verb <- "Discarding"
+  }
   
   # ----- Location ------------------------------------------------------------
   
   # Latitude and longitude must be in range
-  if (remove_Lon_zero) {
+  if ( remove_Lon_zero ) {
     goodLonMask <- !is.na(df$Longitude) & (df$Longitude >= valid_Longitude[1]) & (df$Longitude <= valid_Longitude[2]) & (df$Longitude != 0)
   } else {
     goodLonMask <- !is.na(df$Longitude) & (df$Longitude >= valid_Longitude[1]) & (df$Longitude <= valid_Longitude[2])
   }
   
-  if (remove_Lat_zero) {
+  if ( remove_Lat_zero ) {
     goodLatMask <- !is.na(df$Latitude) & (df$Latitude >= valid_Latitude[1]) & (df$Latitude <= valid_Latitude[2]) & (df$Latitude != 0)
   } else {    
     goodLatMask <- !is.na(df$Latitude) & (df$Latitude >= valid_Latitude[1]) & (df$Latitude <= valid_Latitude[2])
@@ -70,19 +97,25 @@ airsis_ESAMQualityControl <- function(df,
   badRows <- !(goodLonMask & goodLatMask)
   badRowCount <- sum(badRows)
   if ( badRowCount > 0 ) {
-    logger.info("Discarding %s rows with invalid location information", badRowCount)
+    logger.info(paste(verb,"%s rows with invalid location information"), badRowCount)
     badLocations <- paste('(',df$Longitude[badRows],',',df$Latitude[badRows],')',sep='')
     logger.debug("Bad locations: %s", paste0(badLocations, collapse=", "))
+    if ( flagAndKeep ) {
+      # apply flags
+      dfFlagged$QCFlag_badLon[df$rowID[!goodLonMask]] <- TRUE
+      dfFlagged$QCFlag_badLat[df$rowID[!goodLatMask]] <- TRUE
+      dfFlagged$QCFlag_anyBad <- dfFlagged$QCFlag_anyBad | dfFlagged$QCFlag_badLon | dfFlagged$QCFlag_badLat
+      # apply reason codes
+      dfFlagged$QCFlag_reasonCode[df$rowID[!goodLonMask]] <- paste(dfFlagged$QCFlag_reasonCode[df$rowID[!goodLonMask]],"badLon")
+      dfFlagged$QCFlag_reasonCode[df$rowID[!goodLatMask]] <- paste(dfFlagged$QCFlag_reasonCode[df$rowID[!goodLatMask]],"badLat")
+    }
   }
   
   df <- df[goodLonMask & goodLatMask,]
   
-  
   # ----- Time ----------------------------------------------------------------
   
-  # TODO:  How best to assign TimeStamp column with second accuracy to an hourly datetime variable?
-  # TODO:  Should we use TimeStampm or PDate?
-  # TODO:  Are these data in GMT?
+  # NOTE:  Assume all times downloaded from are UTC
   
   # NOTE: It appears the ESAM "TimeStamp" data drifts throughout the day, with >60 minutes between timestamps during most
   # NOTE: hours in the day, and then a daily re-synch. For now we are assuming this is a communication issue rather than
@@ -91,6 +124,13 @@ airsis_ESAMQualityControl <- function(df,
   
   # Add a POSIXct datetime
   df$datetime <- lubridate::floor_date(lubridate::mdy_hms(df$TimeStamp), unit="hour") - lubridate::dhours(1)
+  if ( flagAndKeep ) {
+    # TODO: Unable to get datetime moved from df to dfFlagged without timezone and/or display getting messed up.
+    # For now just duplicating the calculation, then assigning row values to NA after the fact for rows that were
+    # removed from df prior to calculating datetime above. Clean up later if possible.
+    dfFlagged$datetime <- lubridate::floor_date(lubridate::mdy_hms(dfFlagged$TimeStamp), unit="hour") - lubridate::dhours(1)
+    dfFlagged$datetime[ which(!(dfFlagged$rowID %in% df$rowID)) ] <- NA
+  }
   
   # NOTE: The time above truncates the timestamp to the top of an hour, and then subtracts one hour,
   # NOTE: since the measurement that comes in at a few minutes past the hour is actually representative
@@ -101,6 +141,8 @@ airsis_ESAMQualityControl <- function(df,
   # NOTE: though the average wasn't available until the beginning of 2017).
   
   # Leland Tarnay QC -----------------------------------------------------------
+  
+  # NOTE:  Override ConcHr high value with 5000 as per conversation with Mike Broughton
   
   ###tmp.2013_NIFC_GOES65_wrcc$concQA <- with(tmp.2013_NIFC_GOES65_wrcc,
   ###                                         ifelse(Flow < 2 "FlowLow",
@@ -122,25 +164,40 @@ airsis_ESAMQualityControl <- function(df,
   gooddatetime <- !is.na(df$datetime) & df$datetime < lubridate::now("UTC") # saw a future date once
   
   logger.debug("Flow has %s missing or out of range values", sum(!goodFlow))
-  if (sum(!goodFlow) > 0) logger.debug("Bad Flow values:  %s", paste0(sort(df$Flow.l.m.[!goodFlow]), collapse=", "))
+  if (sum(!goodFlow) > 0) logger.debug("Bad Flow values:  %s", paste0(sort(unique(df$Flow.l.m.[!goodFlow]),na.last=TRUE), collapse=", "))
   logger.debug("AT has %s missing or out of range values", sum(!goodAT))
-  if (sum(!goodAT) > 0) logger.debug("Bad AT values:  %s", paste0(sort(df$AT.C.[!goodAT]), collapse=", "))
+  if (sum(!goodAT) > 0) logger.debug("Bad AT values:  %s", paste0(sort(unique(df$AT.C.[!goodAT]),na.last=TRUE), collapse=", "))
   logger.debug("RHi has %s missing or out of range values", sum(!goodRHi))
-  if (sum(!goodRHi) > 0) logger.debug("Bad RHi values:  %s", paste0(sort(df$RHi...[!goodRHi]), collapse=", "))
+  if (sum(!goodRHi) > 0) logger.debug("Bad RHi values:  %s", paste0(sort(unique(df$RHi...[!goodRHi]),na.last=TRUE), collapse=", "))
   logger.debug("Conc has %s missing or out of range values", sum(!goodConcHr))
-  if (sum(!goodConcHr) > 0) logger.debug("Bad Conc values:  %s", paste0(sort(df$Conc.mg.m3.[!goodConcHr]), collapse=", "))
+  if (sum(!goodConcHr) > 0) logger.debug("Bad Conc values:  %s", paste0(sort(unique(df$Conc.mg.m3.[!goodConcHr]),na.last=TRUE), collapse=", "))
   logger.debug("datetime has %s missing or out of range values", sum(!gooddatetime))
-  if (sum(!gooddatetime) > 0) logger.debug("Bad datetime values:  %s", paste0(sort(df$datetime[!gooddatetime]), collapse=", "))
+  if (sum(!gooddatetime) > 0) logger.debug("Bad datetime values:  %s", paste0(sort(unique(df$datetime[!gooddatetime]),na.last=TRUE), collapse=", "))
   
   goodMask <- goodFlow & goodAT & goodRHi & goodConcHr & gooddatetime
-  
-  df <- df[goodMask,]
-  
   badQCCount <- sum(!goodMask)
-  if (badQCCount > 0) {
-    logger.info("Discarding %s rows because of QC logic", badQCCount)
+  
+  if ( badQCCount > 0 ) {
+    logger.info(paste(verb,"%s rows because of QC logic"), badQCCount)
+    if ( flagAndKeep ) {
+      # apply flags
+      dfFlagged$QCFlag_badFlow[df$rowID[!goodFlow]] <- TRUE
+      dfFlagged$QCFlag_badAT[df$rowID[!goodAT]] <- TRUE
+      dfFlagged$QCFlag_badRHi[df$rowID[!goodRHi]] <- TRUE
+      dfFlagged$QCFlag_badConcHr[df$rowID[!goodConcHr]] <- TRUE
+      dfFlagged$QCFlag_badDateAndTime[df$rowID[!gooddatetime]] <- TRUE
+      dfFlagged$QCFlag_anyBad <- (dfFlagged$QCFlag_anyBad | dfFlagged$QCFlag_badFlow | dfFlagged$QCFlag_badAT | 
+                                    dfFlagged$QCFlag_badRHi | dfFlagged$QCFlag_badConcHr | dfFlagged$QCFlag_badDateAndTime)
+      # apply reason codes
+      dfFlagged$QCFlag_reasonCode[df$rowID[!goodFlow]] <- paste(dfFlagged$QCFlag_reasonCode[df$rowID[!goodFlow]],"badFlow")
+      dfFlagged$QCFlag_reasonCode[df$rowID[!goodAT]] <- paste(dfFlagged$QCFlag_reasonCode[df$rowID[!goodAT]],"badAT")
+      dfFlagged$QCFlag_reasonCode[df$rowID[!goodRHi]] <- paste(dfFlagged$QCFlag_reasonCode[df$rowID[!goodRHi]],"badRHi")
+      dfFlagged$QCFlag_reasonCode[df$rowID[!goodConcHr]] <- paste(dfFlagged$QCFlag_reasonCode[df$rowID[!goodConcHr]],"badConcHr")
+      dfFlagged$QCFlag_reasonCode[df$rowID[!gooddatetime]] <- paste(dfFlagged$QCFlag_reasonCode[df$rowID[!gooddatetime]],"badDateAndTime")
+    }
   }
   
+  df <- df[goodMask,]
   
   # ----- Duplicate Hours -----------------------------------------------------
     
@@ -153,20 +210,38 @@ airsis_ESAMQualityControl <- function(df,
   dupHrCount <- sum(dupHrMask)
   uniqueHrMask <- !dupHrMask
   
-  if (dupHrCount > 0) {
-    logger.info("Discarding %s duplicate time entries", dupHrCount)
-    logger.debug("Duplicate times being removed:  %s", paste0(sort(unique(df$Date.Time.GMT[dupHrMask])), collapse=", "))
+  if ( dupHrCount > 0 ) {
+    logger.info(paste(verb,"%s duplicate time entries"), dupHrCount)
+    logger.debug("Duplicate Hours (may be >1 per timestamp):  %s", paste0(sort(unique(df$TimeStamp[dupHrMask])), collapse=", "))
+    if ( flagAndKeep ) {
+      # apply flags
+      dfFlagged$QCFlag_duplicateHr[df$rowID[dupHrMask]] <- TRUE
+      dfFlagged$QCFlag_anyBad <- dfFlagged$QCFlag_anyBad | dfFlagged$QCFlag_duplicateHr
+      # apply reason code
+      dfFlagged$QCFlag_reasonCode[df$rowID[dupHrMask]] <- paste(dfFlagged$QCFlag_reasonCode[df$rowID[dupHrMask]],"duplicateHr")
+    }
   }
 
   df <- df[uniqueHrMask,]
   
-  
   # ----- More QC -------------------------------------------------------------
   
-  # TODO:  Other QC?
+  # NOTE:  Additional QC would go here
   
-  logger.debug("Retaining %d rows of validated measurements", nrow(df))
+  if ( flagAndKeep ) {
+    logger.debug("Retaining %d rows of measurements; %d bad rows flagged", nrow(df), sum(dfFlagged$QCFlag_anyBad))    
+  } else {
+    logger.debug("Retaining %d rows of validated measurements", nrow(df))
+  }
   
+  # ----- Final cleanup -------------------------------------------------------
+  
+  if ( flagAndKeep ) {
+    dfFlagged$QCFlag_reasonCode <- stringr::str_sub(dfFlagged$QCFlag_reasonCode, 3)
+    dfFlagged$QCFlag_reasonCode <- stringr::str_trim(dfFlagged$QCFlag_reasonCode)
+    df <- dfFlagged
+    df$rowID <- NULL
+  }
   
   return(df)
   

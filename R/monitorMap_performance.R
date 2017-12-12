@@ -11,6 +11,7 @@
 #' @param breaks set of breaks used to assign colors or a single integer used to provide quantile based breaks - Must also specify the colorBy paramater
 #' @param paletteFunc a palette generating function as returned by \code{colorRampPalette}
 #' @param showLegend logical specifying whether to add a legend (default: \code{TRUE})
+#' @param legendPos legend position passed to \code{legend()}
 #' @param stateCol color for state outlines on the map
 #' @param stateLwd width for state outlines
 #' @param countyCol color for county outline on the map
@@ -37,23 +38,6 @@
 #' title('Heidike Skill of monitors predicting another monitor.')
 #' }
 
-
-# if(FALSE) {
-#   threshold=AQI$breaks_24[3]
-#   cex=par('cex')
-#   sizeBy=NULL
-#   colorBy="heidikeSkill"
-#   breaks=c(-Inf,.5,.6,.7,.8,Inf)
-#   paletteFunc=grDevices::colorRampPalette(RColorBrewer::brewer.pal(6,"Purples")[-1])
-#   legendTitle="Max AQI Level"
-#   showLegend=TRUE
-#   stateCol="grey60"
-#   stateLwd=2
-#   countyCol="grey70"
-#   countyLwd=1
-#   add=FALSE
-# }
-
 monitorMap_performance <- function (predicted,
                                     observed,
                                     threshold=AQI$breaks_24[3],
@@ -64,6 +48,7 @@ monitorMap_performance <- function (predicted,
                                     paletteFunc=grDevices::colorRampPalette( 
                                       RColorBrewer::brewer.pal( length(breaks) ,"Purples")[-1] ),
                                     showLegend=TRUE,
+                                    legendPos="topright",
                                     stateCol="grey60",
                                     stateLwd=2,
                                     countyCol="grey70",
@@ -75,26 +60,45 @@ monitorMap_performance <- function (predicted,
   # Get the performance dataframe
   performanceDF <- monitor_performance(predicted, observed, threshold, threshold)
   
-  # Plot the basemap
+  # Create the basemap
   if ( !add ) {
     
-    # list of unique states to be plotted as base map
-    stateCode <- as.data.frame( unique( c( as.character( predicted$meta$stateCode) ) ) )
-    colnames(stateCode) <- "abb"
-    state.fips <- maps::state.fips
-    duplicateIndex <- duplicated(state.fips$abb)
-    state.fips <- state.fips[!duplicateIndex,]
-    suppressWarnings(stateName <- dplyr::left_join(stateCode, state.fips, by="abb"))
-    stateName <- apply(as.data.frame(stateName$polyname),2,function(x){stringr::str_split_fixed(x, ':', 2)})[1:nrow(stateName)]
+    stateCodes <- unique(predicted$meta$stateCode)
     
+    if ( is.null(stateCodes) || stateCodes == '' ) {
+      
+      # No stateCodes found. Use xlim and ylim.
+      xlim <- range(predicted$meta$longitude)
+      ylim <- range(predicted$meta$latitude)
+      # add a 1 degree buffer
+      xlim[1] <- xlim[1] - 1.0
+      xlim[2] <- xlim[2] + 1.0
+      ylim[1] <- ylim[1] - 1.0
+      ylim[2] <- ylim[2] + 1.0
+      # Plot the base map: state first, counties on top
+      maps::map("state", xlim=xlim, ylim=ylim, col=stateCol, lwd=stateLwd, ...)
+      maps::map('county', xlim=xlim, ylim=ylim, col=countyCol, lwd=countyLwd, add=TRUE, ...)
+      
+    } else {
+      
+      # Plot only the states containing the monitors
+      # Need to get the maps package state names to be plotted in base map
+      # We need to deal with things like "washington:whidbey island"
+      stateCodes <- as.character(stateCodes)
+      df <- maps::state.fips
+      df$polyname <- stringr::str_replace(df$polyname, ":.*", "")
+      df <- df %>% dplyr::filter(df$abb %in% stateCodes) %>% dplyr::distinct()
+      stateNames <- df$polyname
+      # Plot the base map: state first, counties on top
+      maps::map("state", stateNames, col=stateCol, lwd=stateLwd, ...)
+      maps::map('county', stateNames, col=countyCol, lwd=countyLwd, add=TRUE, ...)
+      
+    }
     
-    maps::map("state", stateName, col=stateCol, lwd=stateLwd, ...)
-    maps::map('county', stateName, col=countyCol, lwd=countyLwd, add=TRUE, ...)
   }
   
-  
   # Sizing
-  if ( !is.null(sizeBy) && sizeBy %in% names(performanceDF)) {
+  if ( !is.null(sizeBy) && sizeBy %in% names(performanceDF) ) {
     cex <- cex * performanceDF[[sizeBy]] / max(performanceDF[[sizeBy]], na.rm = TRUE) 
   }
   
@@ -105,7 +109,7 @@ monitorMap_performance <- function (predicted,
       breaks <- stats::quantile(performanceDF[[colorBy]], probs=probs, na.rm=TRUE)
     }
     indices <- .bincode(performanceDF[[colorBy]], breaks=breaks, include.lowest=TRUE)
-    colors <- paletteFunc(max(indices,na.rm=TRUE))
+    colors <- paletteFunc((length(breaks)-1))
     cols <- colors[indices]
     
     # create a legend to be used later
@@ -124,10 +128,10 @@ monitorMap_performance <- function (predicted,
   argsList <- list(...)
   
   if( is.null(argsList$projection) ) {
-    points(lon, lat, pch=16, cex=cex, col=cols)
+    points(lon, lat, pch=16, cex=cex, col=cols, xpd=NA)
   } else {
     points( mapproj::mapproject(lon,lat,argsList$projection, argsList$parameters, 
-                                argsList$orientation), pch=16, cex=cex, col=cols )
+                                argsList$orientation), pch=16, cex=cex, col=cols, xpd=NA )
   }
   
   # # if neither colorBy nor sizeBy is specified, there is nothing to show in the legend
@@ -143,7 +147,7 @@ monitorMap_performance <- function (predicted,
   #   }
   # }
   if ( showLegend & !is.null(colorBy) ) {
-    legend( "topright", cex=cex*0.5, col=rev(colors), legend=rev(legend), title=paste0(colorBy, " levels") )
+    legend( legendPos, pch=16, cex=cex*0.5, col=rev(colors), legend=rev(legend), title=paste0(colorBy, " levels") )
   }
   
 }

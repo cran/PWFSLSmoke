@@ -11,7 +11,7 @@
 #' contains a \code{POSIXct} time in UTC. Additional columns contain data
 #' for each separate deployment of a monitor. 
 #' 
-#' @return A \code{data} dataframe for use in a emph{ws_monitor} object.
+#' @return A \code{data} dataframe for use in a \emph{ws_monitor} object.
 
 
 airsis_createDataDataframe <- function(df, meta) {
@@ -42,13 +42,15 @@ airsis_createDataDataframe <- function(df, meta) {
     stop(paste0("Multiple monitor types found in 'meta' dataframe."))
   }
   
-  # Add monitorID to the dataframe
-  df$monitorID <- meta$monitorID[df$deploymentID]
+  # Create monitorID the same way we did in airsis_createMetaDataframe()
+  df$monitorID <- paste0( make.names(df$monitorName), '__', df$deploymentID )
   
   if ( monitorType == 'EBAM' ) {
     pm25Var <- 'ConcHr'
   } else if ( monitorType == 'ESAM' ) {
     pm25Var <- 'Conc.mg.m3.'
+  } else if ( monitorType == 'BAM1020' ) {
+    pm25Var <- 'Conc..\u00B5g.m3.'
   } else {
     logger.error("Dataframe creation is not supported for %s", monitorType)
     stop(paste0("Dataframe creation is not supported for ", monitorType))
@@ -69,9 +71,10 @@ airsis_createDataDataframe <- function(df, meta) {
   maxCount <- max(valueCountPerCell[,-1])
   if (maxCount > 1) logger.warn("Up to %s measurements per hour -- median used",maxCount)
   
-  # NOTE:  The resulting dataframe is [datetime,monitorID] with an extra first column containing datetime
+  # NOTE:  The resulting dataframe is [datetime,monitorIDs] with monitorIDs in alphabetical order
   pm25DF <- reshape2::dcast(melted, datetime ~ monitorID, stats::median)
-  colnames(pm25DF) <- c('datetime',meta$monitorID)
+  # Reorder data columns to match the order of monitorIDs in 'meta'
+  pm25DF <- pm25DF[,c('datetime',meta$monitorID)]
 
   # Create an empty hourlyDF dataframe with a full time axis (no missing hours)
   datetime <- seq(min(df$datetime), max(df$datetime), by="hours")
@@ -81,7 +84,7 @@ airsis_createDataDataframe <- function(df, meta) {
   # NOTE:  dplyr returns objects of class "tbl_df" which can be confusing. We undo that.
   data <- as.data.frame( dplyr::left_join(hourlyDF, pm25DF, by='datetime') )
 
-  logger.debug("Created 'data' dataframe with %d rows and %d columns", nrow(data), ncol(data))
+  logger.info("Created 'data' dataframe with %d rows and %d columns", nrow(data), ncol(data))
   
   return(as.data.frame(data))
   

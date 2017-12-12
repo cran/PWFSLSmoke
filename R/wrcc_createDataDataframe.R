@@ -11,7 +11,7 @@
 #' contains a \code{POSIXct} time in UTC. Additional columns contain data
 #' for each separate deployment of a monitor. 
 #' 
-#' @return A \code{data} dataframe for use in a emph{ws_monitor} object.
+#' @return A \code{data} dataframe for use in a \emph{ws_monitor} object.
 
 
 wrcc_createDataDataframe <- function(df, meta) {
@@ -42,8 +42,8 @@ wrcc_createDataDataframe <- function(df, meta) {
     stop(paste0("No 'deploymentID' column found in 'df' dataframe.  Have you run addClustering()?"))
   }
   
-  # Add monitorID to the dataframe
-  df$monitorID <- meta$monitorID[df$deploymentID]
+  # Create monitorID the same way we did in wrcc_createMetaDataframe()
+  df$monitorID <- paste0( make.names(df$monitorName), '__', df$deploymentID )
   
   if ( monitorType == 'EBAM' ) {
     pm25Var <- 'ConcRT'
@@ -63,17 +63,17 @@ wrcc_createDataDataframe <- function(df, meta) {
   if ( monitorType == 'ESAM' ) melted$value <- melted$value * 1 # no conversion needed
   
   # Use median if multiple values are found
-  
+
   # Sanity check -- only one pm25DF measure per hour
   valueCountPerCell <- reshape2::dcast(melted, datetime ~ monitorID, length)
   maxCount <- max(valueCountPerCell[,-1])
   if (maxCount > 1) logger.warn("Up to %s measurements per hour -- median used",maxCount)
   
-  # NOTE:  The resulting dataframe is [datetime,monitorID] with an extra first column containing datetime
+  # NOTE:  The resulting dataframe is [datetime,monitorIDs] with monitorIDs in alphabetical order
   pm25DF <- reshape2::dcast(melted, datetime ~ monitorID, stats::median)
-  colnames(pm25DF) <- c('datetime',meta$monitorID)
-  rownames(pm25DF) <- format(pm25DF$datetime,"%Y%m%d%H",tz="GMT")
-  
+  # Reorder data columns to match the order of monitorIDs in 'meta'
+  pm25DF <- pm25DF[,c('datetime',meta$monitorID)]
+
   # Create an empty hourlyDF dataframe with a full time axis (no missing hours)
   datetime <- seq(min(df$datetime), max(df$datetime), by="hours")
   hourlyDF <- data.frame(datetime=datetime)
@@ -82,7 +82,7 @@ wrcc_createDataDataframe <- function(df, meta) {
   # NOTE:  dplyr returns objects of class "tbl_df" which can be confusing. We undo that.
   data <- as.data.frame( dplyr::left_join(hourlyDF, pm25DF, by='datetime') )
 
-  logger.debug("Created 'data' dataframe with %d rows and %d columns", nrow(data), ncol(data))
+  logger.info("Created 'data' dataframe with %d rows and %d columns", nrow(data), ncol(data))
   
   return(as.data.frame(data))
   

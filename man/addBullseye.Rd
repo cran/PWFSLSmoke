@@ -2,14 +2,14 @@
 % Please edit documentation in R/addBullseye.R
 \name{addBullseye}
 \alias{addBullseye}
-\title{Add a Bullseye at the Specified Location}
+\title{Add a Bullseyes to a Map or RgoogleMap Plot}
 \usage{
-addBullseye(lon, lat, map = NULL, cex = 2, lwd = 2)
+addBullseye(longitude, latitude, map = NULL, cex = 2, lwd = 2)
 }
 \arguments{
-\item{lon}{vector of longitudes}
+\item{longitude}{vector of longitudes}
 
-\item{lat}{vector of latitudes}
+\item{latitude}{vector of latitudes}
 
 \item{map}{optional RgoogleMaps map object}
 
@@ -26,4 +26,3 @@ monitorMap(wa, cex=4)
 addBullseye(wa$meta$longitude, wa$meta$latitude)
 }
 \keyword{plotting}
-

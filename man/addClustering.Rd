@@ -5,7 +5,7 @@
 \title{Add Clustering Information to a Dataframe}
 \usage{
 addClustering(df, clusterDiameter = 1000, lonVar = "longitude",
-  latVar = "latitude", maxClusters = 50)
+  latVar = "latitude", maxClusters = 50, flagAndKeep = FALSE)
 }
 \arguments{
 \item{df}{dataframe with geolocation information (\emph{e.g.} created by \code{wrcc_qualityControl()} or \code{airsis_qualityControl})}
@@ -17,6 +17,8 @@ addClustering(df, clusterDiameter = 1000, lonVar = "longitude",
 \item{latVar}{name of the latitude variable in the incoming dataframe}
 
 \item{maxClusters}{maximum number of clusters to try}
+
+\item{flagAndKeep}{flag, rather then remove, bad data during clustering}
 }
 \value{
 Input dataframe with additional columns: \code{deploymentID, medoidLon, mediodLat}.
@@ -31,4 +33,3 @@ to determine the number of clusters.
 \href{http://mazamascience.com/WorkingWithData/?p=1694}{When k-means Clustering Fails}
 }
 \keyword{internal}
-

@@ -7,7 +7,8 @@
 airsis_ESAMQualityControl(df, valid_Longitude = c(-180, 180),
   valid_Latitude = c(-90, 90), remove_Lon_zero = TRUE,
   remove_Lat_zero = TRUE, valid_Flow = c(1.999, 2.001), valid_AT = c(-Inf,
-  150), valid_RHi = c(-Inf, 55), valid_Conc = c(-Inf, 984))
+  150), valid_RHi = c(-Inf, 55), valid_Conc = c(-Inf, 5000),
+  flagAndKeep = FALSE)
 }
 \arguments{
 \item{df}{single site dataframe created by \code{airsis_downloadData()}}
@@ -27,6 +28,8 @@ airsis_ESAMQualityControl(df, valid_Longitude = c(-180, 180),
 \item{valid_RHi}{range of valid RHi... values}
 
 \item{valid_Conc}{range of valid Conc.mg.m3. values}
+
+\item{flagAndKeep}{flag, rather then remove, bad data during the QC process}
 }
 \value{
 Cleaned up dataframe of AIRSIS monitor data.
@@ -42,10 +45,9 @@ The following columns of data are tested against valid ranges:
 \item{\code{ConcHr}}
 }
 
-A \code{POSIXct datetime} column (UTC) is also added based on \code{Date.Time.GMT}.
+A \code{POSIXct datetime} column (UTC) is also added based on \code{TimeStamp}.
 }
 \seealso{
 \code{\link{airsis_qualityControl}}
 }
 \keyword{AIRSIS}
-

@@ -4,9 +4,12 @@ knitr::opts_chunk$set(fig.width=7, fig.height=5)
 ## ------------------------------------------------------------------------
 library(PWFSLSmoke)
 
-# Get some airnow data for Washington
-airnow <- airnow_load(startdate=20150801, enddate=20150831)
-WA <- monitor_subset(airnow, stateCodes='WA')
+# Get some airnow data for Washington state in the summer of 2015
+N_M <- monitor_subset(Northwest_Megafires, tlim=c(20150801,20150831))
+# To work with AirNow data directly, uncomment the next two lines
+#N_M <- airnow_load(startdate=20150801, enddate=20150831)
+#WA <- monitor_subset(airnow, stateCodes=c("WA"))
+WA <- monitor_subset(N_M, stateCodes='WA')
 
 # 'ws_monitor' objects can be identified by their class
 class(WA)
@@ -25,8 +28,8 @@ all(rownames(WA$meta) == colnames(WA$data[,-1]))
 
 ## ------------------------------------------------------------------------
 # Use special knowledge of AirNow IDs to subset airnow data for Spokane county monitors
-SpokaneCountyIDs <- airnow$meta$monitorID[stringr::str_detect(airnow$meta$monitorID, "^53063")]
-Spokane <- monitor_subset(airnow, monitorIDs=SpokaneCountyIDs)
+SpokaneCountyIDs <- N_M$meta$monitorID[stringr::str_detect(N_M$meta$monitorID, "^53063")]
+Spokane <- monitor_subset(N_M, monitorIDs=SpokaneCountyIDs)
 
 # Apply 3-hr rolling mean
 Spokane_3hr <- monitor_rollingMean(Spokane, 3, align="center")

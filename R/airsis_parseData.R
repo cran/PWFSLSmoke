@@ -45,9 +45,7 @@ airsis_parseData <- function(fileString) {
   
   if ( monitorType == "BAM1020" ) {
     
-    logger.warn("BAM1020 file parsing is not supported")
-    logger.debug("Header line:\n\t%s", paste0(rawNames,collapse=','))
-    stop(paste0("BAM1020 file parsing is not supported"), call.=FALSE)
+    logger.debug("Parsing BAM1020 data ...")
     
   } else if ( monitorType == "EBAM" ) {
     
@@ -60,10 +58,13 @@ airsis_parseData <- function(fileString) {
     # NOTE:  Some E-Sampler files from AIRSIS (USFS 1050) have internal rows messed up with header line information
     # NOTE:  We need to remove these first. It seems they can be identified by searching for '%'.
     # NOTE:  Of course, we have to retain the first header line.
-    internalHeaderLines <- which(stringr::str_detect(lines,'%'))[-1]
     
-    logger.debug("Removing %d 'internal header line' records from raw data", length(internalHeaderLines))
-    lines <- lines[-internalHeaderLines]
+    internalHeaderMask <- stringr::str_detect(lines,'%')
+    internalHeaderMask[1] <- FALSE
+    if ( sum(internalHeaderMask) > 0 ) {
+      logger.debug("Removing %d 'internal header line' records from raw data", sum(internalHeaderMask))
+      lines <- lines[!internalHeaderMask]
+    }
     
   } else if ( monitorType == "OTHER_1" ) {
     
@@ -89,8 +90,10 @@ airsis_parseData <- function(fileString) {
   #     Parse the file     ----------------------------------------------------
   
   # Remove header line, leaving only data
-  fakeFile <- paste0(lines[-1], collapse='\n')
-  
+  # NOTE:  We need to guarantee that fakeFile always has a newline so that read_lines will interpret
+  # NOTE:  a single data record as literal data and now a path.
+  fakeFile <- paste0(paste0(lines[-1], collapse='\n'),'\n')
+
   df <- suppressWarnings( readr::read_csv(fakeFile, col_names=columnNames, col_types=columnTypes) )
   
   # Print out any problems encountered by readr::read_csv
@@ -103,6 +106,10 @@ airsis_parseData <- function(fileString) {
     }
   }
   
+  # Add monitor name and type
+  df$monitorName <- df$Alias
+  df$monitorType <- monitorType
+  
   #     E-Sampler fixes     ---------------------------------------------------
   
   if ( monitorType == "ESAM" ) {
@@ -111,13 +118,29 @@ airsis_parseData <- function(fileString) {
     # We remove those here.
     
     serialNumberMask <- (df$Serial.Number != "") & !is.na(df$Serial.Number)
-    logger.debug("Removing %d 'Serial Number' records from raw data", sum(serialNumberMask))
+    if ( sum(serialNumberMask) > 0 ) {
+      logger.debug("Removing %d 'Serial Number' records from raw data", sum(serialNumberMask))
+      df <- df[!serialNumberMask,]
+    }
     
-    df <- df[!serialNumberMask,]
+  }
+  
+  #     EBAM1020 fixes     ---------------------------------------------------
+  
+  if ( monitorType == "BAM1020" ) {
+    
+    # TODO: UnitID=49 on 6/20/10 had every other row missing; also, no lat/lon info.
+    # TODO: May want to look into this further if noticed in more recent data as well.
     
   }
   
   #     Various fixes     -----------------------------------------------------
+  
+  # Check to see if any records remain
+  if ( nrow(df) == 0 ) {
+    logger.warn("No data remaining after parsing cleanup")
+    stop("No data remaining after parsing cleanup", call.=FALSE)
+  }
   
   # NOTE:  Latitude, Longitude and Sys..Volts are measured at 6am and 6pm
   # NOTE:  as separate GPS entries in the dataframe. They need to be carried
@@ -128,26 +151,23 @@ airsis_parseData <- function(fileString) {
   # Carry data forward to fill in all missing values
   df$Longitude <- zoo::na.locf(df$Longitude, na.rm=FALSE)
   df$Latitude <- zoo::na.locf(df$Latitude, na.rm=FALSE)
-  if ( monitorType == "BAM1020" ) df$System.Volts <- zoo::na.locf(df$System.Volts, na.rm=FALSE)
+  # NOTE: BAM1020s don't have voltage data
   if ( monitorType == "EBAM" ) df$Sys..Volts <- zoo::na.locf(df$Sys..Volts, na.rm=FALSE)
   if ( monitorType == "ESAM" ) df$System.Volts <- zoo::na.locf(df$System.Volts, na.rm=FALSE)
   
   # Now fill in any missing values at the front end
   df$Longitude <- zoo::na.locf(df$Longitude, na.rm=FALSE, fromLast=TRUE)
   df$Latitude <- zoo::na.locf(df$Latitude, na.rm=FALSE, fromLast=TRUE)
-  if ( monitorType == "BAM1020" ) df$System.Volts <- zoo::na.locf(df$System.Volts, na.rm=FALSE, fromLast=TRUE)
+  # NOTE: BAM1020s don't have voltage data
   if ( monitorType == "EBAM" ) df$Sys..Volts <- zoo::na.locf(df$Sys..Volts, na.rm=FALSE, fromLast=TRUE)
   if ( monitorType == "ESAM" ) df$System.Volts <- zoo::na.locf(df$System.Volts, na.rm=FALSE, fromLast=TRUE)
   
   logger.debug("Removing %d 'GPS' records from raw data", sum(gpsMask))
-  
   df <- df[!gpsMask,]
   
-  # Add monitor name and type
-  df$monitorName <- df$Alias
-  df$monitorType <- monitorType
   
-  logger.debug("Created dataframe with %d rows of raw %s measurements", nrow(df), monitorType)
-  
+  logger.debug('Retaining %d rows of raw %s measurements', nrow(df), monitorType)
+
   return(df)
+  
 }

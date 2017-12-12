@@ -3,11 +3,11 @@
 #' @title Obtain WRCC Data and Create ws_monitor Object
 #' @param startdate desired start date (integer or character representing YYYYMMDD[HH])
 #' @param enddate desired end date (integer or character representing YYYYMMDD[HH])
-#' @param stationID station identifier (will be upcased)
+#' @param unitID station identifier (will be upcased)
 #' @param clusterDiameter diameter in meters used to determine the number of clusters (see \code{addClustering})
 #' @param baseUrl base URL for data queries
 #' @param saveFile optional filename where raw CSV will be written
-#' @return A emph{ws_monitor} object with WRCC data.
+#' @return A \emph{ws_monitor} object with WRCC data.
 #' @description Obtains monitor data from an WRCC webservice and converts
 #' it into a quality controlled, metadata enhanced \emph{ws_monitor} object
 #' ready for use with all \code{monitor_~} functions.
@@ -32,21 +32,21 @@
 #' @seealso \code{\link{wrcc_createDataDataframe}}
 #' @examples
 #' \dontrun{
-#' sm13 <- wrcc_createMonitorObject(20150301, 20150831, stationID='sm13')
+#' sm13 <- wrcc_createMonitorObject(20150301, 20150831, unitID='sm13')
 #' monitorLeaflet(sm13)
 #' }
 
 wrcc_createMonitorObject <- function(startdate=20020101,
-                                     enddate=strftime(lubridate::now(),"%Y%m%d",tz="GMT"),
-                                     stationID=NULL,
+                                     enddate=strftime(lubridate::now(),"%Y%m%d",tz="UTC"),
+                                     unitID=NULL,
                                      clusterDiameter=1000,
-                                     baseUrl="http://www.wrcc.dri.edu/cgi-bin/wea_list2.pl",
+                                     baseUrl="https://wrcc.dri.edu/cgi-bin/wea_list2.pl",
                                      saveFile=NULL) {
   
   # Sanity checks
-  if ( is.null(stationID) ) {
-    logger.error("Required parameter 'stationID' is missing")
-    stop(paste0("Required parameter 'stationID' is missing"))
+  if ( is.null(unitID) ) {
+    logger.error("Required parameter 'unitID' is missing")
+    stop(paste0("Required parameter 'unitID' is missing"))
   }
   
   startdateCount <- stringr::str_count(as.character(startdate))
@@ -63,7 +63,7 @@ wrcc_createMonitorObject <- function(startdate=20020101,
   
   # Read in WRCC .csv data
   logger.info("Downloading WRCC data ...")
-  fileString <- wrcc_downloadData(startdate, enddate, stationID, baseUrl)
+  fileString <- wrcc_downloadData(startdate, enddate, unitID, baseUrl)
   
   # Optionally save as a raw .csv file
   if ( !is.null(saveFile) ) {
@@ -77,11 +77,11 @@ wrcc_createMonitorObject <- function(startdate=20020101,
   }
   
   # Read csv raw data into a dataframe
-  logger.info("Parsing data ...")
+  logger.debug("Parsing data ...")
   df <- wrcc_parseData(fileString)
   
   # Apply monitor-appropriate QC to the dataframe
-  logger.info("Applying QC logic ...")
+  logger.debug("Applying QC logic ...")
   df <- wrcc_qualityControl(df)
   
   # See if anything gets through QC
@@ -91,22 +91,26 @@ wrcc_createMonitorObject <- function(startdate=20020101,
   }
   
   # Add clustering information to identify unique deployments
-  logger.info("Clustering ...")
+  logger.debug("Clustering ...")
   df <- addClustering(df, lonVar='GPSLon', latVar='GPSLat', clusterDiameter=clusterDiameter)
   
   # Create 'meta' dataframe of site properties organized as monitorID-by-property
   # NOTE:  This step will create a uniformly named set of properties and will
   # NOTE:  add site-specific information like timezone, elevation, address, etc.
-  logger.info("Creating 'meta' dataframe ...")
+  logger.debug("Creating 'meta' dataframe ...")
   meta <- wrcc_createMetaDataframe(df)
   
   # Create 'data' dataframe of PM2.5 values organized as time-by-monitorID
-  logger.info("Creating 'data' dataframe ...")
+  logger.debug("Creating 'data' dataframe ...")
   data <- wrcc_createDataDataframe(df, meta)
   
   # Create the 'ws_monitor' object
   ws_monitor <- list(meta=meta, data=data)
   ws_monitor <- structure(ws_monitor, class = c("ws_monitor", "list"))
+
+  # Reset all negative values that made it through QC to zero
+  logger.debug("Reset negative valus to zero ...")
+  ws_monitor <- monitor_replaceData(ws_monitor, data < 0, 0)
   
   return(ws_monitor)
   

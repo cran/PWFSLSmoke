@@ -12,7 +12,7 @@ openaq_createDataDataframes(df, parameters = NULL)
 \item{parameters}{pollutant name}
 }
 \value{
-A \code{data} dataframe for use in a emph{ws_monitor} object.
+A \code{data} dataframe for use in a \emph{ws_monitor} object.
 }
 \description{
 After addtional columns(i.e. \code{'datetime'}, \code{'stateCode'}, and \code{'monitorID'}) 
@@ -38,4 +38,3 @@ carbon monoxide (CO), and black carbon (BC)
 }
 }
 \keyword{OpenAQ}
-
