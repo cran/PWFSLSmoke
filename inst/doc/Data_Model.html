@@ -212,27 +212,27 @@ with groups of individual monitors.</p>
 
 <p>To work efficiently with the package it is important to understand the structure of this
 data object and which functions operate on it. Package functions that begin with <code>monitor_</code>, 
-expect objects of class <code>ws_monitor</code> as their first argument. (<em>Note that &#39;ws_&#39; stands for &#39;wildfire smoke&#39;.</em>)</p>
+expect objects of class <code>ws_monitor</code> as their first argument. (<em>&#39;ws_&#39; stands for &#39;wildfire smoke&#39;</em>)</p>
 
 <h2>Monitoring Data</h2>
 
 <p>Monitoring data will typically be obtained from an agency charged with archiving data
 acquired at monitoring sites. For wildifre smoke, the primary pollutant is PM 2.5 and the
-sites archiving this data include <a href="https://www.airnow.gov">AirNow</a>, <a href="http://www.wrcc.dri.edu">WRCC</a> and
-<a href="https://app.airsis.com/USFS">AIRSIS</a>.</p>
+sites archiving this data include [EPA[(<a href="https://www.epa.gov/outdoor-air-quality-data">https://www.epa.gov/outdoor-air-quality-data</a>),
+<a href="https://www.airnow.gov">AirNow</a>, <a href="https://app.airsis.com/USFS">AIRSIS</a> and <a href="http://www.wrcc.dri.edu">WRCC</a>.</p>
 
 <p>The data model for monitoring data consists of an <strong>R</strong> <code>list</code> with two dataframes: <code>data</code> and <code>meta</code>.</p>
 
 <p>The <code>data</code> dataframe contains all hourly measurements organized with rows (the &#39;unlimited&#39; dimension) as unique timesteps and
-columns as unique monitors. The very first column is always named <code>datetime</code> and contains the <code>POSIXct</code> datetime
+columns as unique monitor deployments. The very first column is always named <code>datetime</code> and contains the <code>POSIXct</code> datetime
 in Coordinated Universal Time (UTC).</p>
 
-<p>The <code>meta</code> dataframe contains all metadata associated with monitoring sites and is organized with
-rows as unique sites and columns as site attributes. The following columns are guaranteed to exist
+<p>The <code>meta</code> dataframe contains all metadata associated with monitor deployment sites and is organized with
+rows as unique monitor deployments and columns as site attributes. The following columns are guaranteed to exist
 in the <code>meta</code> dataframe:</p>
 
 <ul>
-<li><code>monitorID</code> &ndash; unique ID for each monitoring site (<em>i.e.</em> each instrument deployment)</li>
+<li><code>monitorID</code> &ndash; unique ID for each site-instrument combination</li>
 <li><code>longitude</code> &ndash; decimal degrees East</li>
 <li><code>latitude</code> &ndash; decimal degrees North</li>
 <li><code>elevation</code> &ndash; meters above sea level</li>
@@ -243,8 +243,25 @@ in the <code>meta</code> dataframe:</p>
 
 <p><em>(The <a href="https://github.com/MazamaScience/MazamaSpatialUtils">MazamaSpatialUtils</a> package is used to assign timezones and state and country codes.)</em></p>
 
-<p>Additional columns may be available in the <code>meta</code> dataframe and these will depend on the source of the
-data.</p>
+<p>Starting with version 1.0 of the package, the following additional columns (mostly for internal use) will always exist:</p>
+
+<ul>
+<li><code>siteName</code> &ndash; familiar name for a monitoring site</li>
+<li><code>countyName</code> &ndash; county/province name</li>
+<li><code>msaName</code> &ndash; US Census Bureau &#39;Metropolitan/Micropolitan Statistical Area&#39;</li>
+<li><code>agencyName</code> &ndash; agency responsible for collecting the data</li>
+<li><code>monitorType</code> &ndash; broad instrument categories for E-Sampler, EBAM or BAM-1020</li>
+<li><code>siteID</code> &ndash; unique identifier for each site</li>
+<li><code>instrumentID</code> &ndash; sequential identifier for each instrument at a single site</li>
+<li><code>aqsID</code> &ndash; AQS site identifier (often used as the <code>siteID</code>)</li>
+<li><code>pwfslID</code> &ndash; PWFSL site identifier (used as the <code>siteID</code> for temporary monitors)</li>
+<li><code>pwfslDataIngestSource</code> &ndash; identifier for the source of monitoring data (e.g. AIRNOW, AIRSIS, WRCC_DUMPFILE, <em>etc.</em>)</li>
+<li><code>telemetryAggregator</code> &ndash; data provider for temporary monitors (<em>e.g.</em> &#39;wrcc&#39; or &#39;usfs.airsis&#39;)</li>
+<li><code>telemetryUnitID</code> &ndash; unique ID for each monitoring site used within the <code>telemetry_aggregator</code></li>
+</ul>
+
+<p>These additional columns of information are much more variable and, depending on the source of data, may include
+many missing values.</p>
 
 <p>It is important to note that the <code>monitorID</code> acts as a unique key that connects data with metadata.
 The <code>monitorID</code> is used for column names in the <code>data</code> dataframe and for row names in the <code>meta</code> dataframe.
@@ -259,40 +276,13 @@ colnames(ws_monitor$data) == c(&#39;datetime&#39;,ws_monitor$meta$monitorID)
 <p>We will use the built-in &ldquo;Northwest_Megafires&rdquo; dataset and the <code>monitor_subset()</code> function to subset a <code>ws_monitor</code> object
 which we can then explore.</p>
 
-<pre><code class="r">library(PWFSLSmoke)
-</code></pre>
+<pre><code class="r">suppressPackageStartupMessages(library(PWFSLSmoke))
 
-<pre><code>## Loading required package: dplyr
-</code></pre>
-
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;
-</code></pre>
-
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag
-</code></pre>
-
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union
-</code></pre>
-
-<pre><code>## Loading required package: maps
-</code></pre>
-
-<pre><code>## Loading required package: MazamaSpatialUtils
-</code></pre>
-
-<pre><code>## Loading required package: sp
-</code></pre>
-
-<pre><code class="r"># Get some airnow data for Washington state in the summer of 2015
-N_M &lt;- monitor_subset(Northwest_Megafires, tlim=c(20150801,20150831))
-# To work with AirNow data directly, uncomment the next two lines
-#N_M &lt;- airnow_load(startdate=20150801, enddate=20150831)
-#WA &lt;- monitor_subset(airnow, stateCodes=c(&quot;WA&quot;))
+# Get some airnow data for Washington state in the summer of 2015
+# NONE:  &#39;tlim&#39; is interpreted as UTC unless we specify &#39;timezone&#39; 
+N_M &lt;- monitor_subset(Northwest_Megafires,
+                      tlim=c(20150801,20150831),
+                      timezone=&quot;America/Los_Angeles&quot;)
 WA &lt;- monitor_subset(N_M, stateCodes=&#39;WA&#39;)
 
 # &#39;ws_monitor&#39; objects can be identified by their class
@@ -306,34 +296,41 @@ class(WA)
 dim(WA$meta)
 </code></pre>
 
-<pre><code>## [1] 55 24
+<pre><code>## [1] 55 19
 </code></pre>
 
 <pre><code class="r">rownames(WA$meta)
 </code></pre>
 
-<pre><code>##  [1] &quot;530330017&quot; &quot;530330080&quot; &quot;530050002&quot; &quot;530330024&quot; &quot;530330057&quot;
-##  [6] &quot;530332004&quot; &quot;530530029&quot; &quot;530530031&quot; &quot;530610005&quot; &quot;530611007&quot;
-## [11] &quot;530630047&quot; &quot;530670013&quot; &quot;530531018&quot; &quot;530272002&quot; &quot;530310003&quot;
-## [16] &quot;530730015&quot; &quot;530251002&quot; &quot;530650004&quot; &quot;530010003&quot; &quot;530750006&quot;
-## [21] &quot;530750003&quot; &quot;530331011&quot; &quot;530210002&quot; &quot;530330037&quot; &quot;530710005&quot;
-## [26] &quot;530750005&quot; &quot;530150015&quot; &quot;530470009&quot; &quot;530370002&quot; &quot;530090013&quot;
-## [31] &quot;530610020&quot; &quot;530070010&quot; &quot;530770015&quot; &quot;530650002&quot; &quot;530470010&quot;
-## [36] &quot;530770009&quot; &quot;530570015&quot; &quot;530130002&quot; &quot;530030004&quot; &quot;530110022&quot;
-## [41] &quot;530579999&quot; &quot;530639997&quot; &quot;530299999&quot; &quot;530639996&quot; &quot;530410004&quot;
-## [46] &quot;530770016&quot; &quot;530090015&quot; &quot;530450007&quot; &quot;530470013&quot; &quot;530570011&quot;
-## [51] &quot;530350007&quot; &quot;530070011&quot; &quot;530330030&quot; &quot;530110024&quot; &quot;530090017&quot;
+<pre><code>##  [1] &quot;530330017_01&quot; &quot;530330080_01&quot; &quot;530050002_01&quot; &quot;530330024_01&quot;
+##  [5] &quot;530330057_01&quot; &quot;530332004_01&quot; &quot;530530029_01&quot; &quot;530530031_01&quot;
+##  [9] &quot;530610005_01&quot; &quot;530611007_01&quot; &quot;530630047_01&quot; &quot;530670013_01&quot;
+## [13] &quot;530531018_01&quot; &quot;530272002_01&quot; &quot;530310003_01&quot; &quot;530730015_01&quot;
+## [17] &quot;530251002_01&quot; &quot;530650004_01&quot; &quot;530010003_01&quot; &quot;530750006_01&quot;
+## [21] &quot;530750003_01&quot; &quot;530331011_01&quot; &quot;530210002_01&quot; &quot;530330037_01&quot;
+## [25] &quot;530710005_01&quot; &quot;530750005_01&quot; &quot;530150015_01&quot; &quot;530470009_01&quot;
+## [29] &quot;530370002_01&quot; &quot;530090013_01&quot; &quot;530610020_01&quot; &quot;530070010_01&quot;
+## [33] &quot;530770015_01&quot; &quot;530650002_01&quot; &quot;530470010_01&quot; &quot;530770009_01&quot;
+## [37] &quot;530570015_01&quot; &quot;530130002_01&quot; &quot;530030004_01&quot; &quot;530110022_01&quot;
+## [41] &quot;530579999_01&quot; &quot;530639997_01&quot; &quot;530299999_01&quot; &quot;530639996_01&quot;
+## [45] &quot;530410004_01&quot; &quot;530770016_01&quot; &quot;530090015_01&quot; &quot;530450007_01&quot;
+## [49] &quot;530470013_01&quot; &quot;530570011_01&quot; &quot;530350007_01&quot; &quot;530070011_01&quot;
+## [53] &quot;530330030_01&quot; &quot;530110024_01&quot; &quot;530090017_01&quot;
 </code></pre>
 
 <pre><code class="r">colnames(WA$meta)
 </code></pre>
 
-<pre><code>##  [1] &quot;AQSID&quot;          &quot;siteCode&quot;       &quot;siteName&quot;       &quot;status&quot;        
-##  [5] &quot;agencyID&quot;       &quot;agencyName&quot;     &quot;EPARegion&quot;      &quot;latitude&quot;      
-##  [9] &quot;longitude&quot;      &quot;elevation&quot;      &quot;GMTOffsetHours&quot; &quot;countryCode&quot;   
-## [13] &quot;FIPSCMSACode&quot;   &quot;CMSAName&quot;       &quot;FIPSMSACode&quot;    &quot;MSAName&quot;       
-## [17] &quot;FIPSStateCode&quot;  &quot;stateCode&quot;      &quot;GNISCountyCode&quot; &quot;countyName&quot;    
-## [21] &quot;GNISCityCode&quot;   &quot;cityName&quot;       &quot;timezone&quot;       &quot;monitorID&quot;
+<pre><code>##  [1] &quot;monitorID&quot;             &quot;longitude&quot;            
+##  [3] &quot;latitude&quot;              &quot;elevation&quot;            
+##  [5] &quot;timezone&quot;              &quot;countryCode&quot;          
+##  [7] &quot;stateCode&quot;             &quot;siteName&quot;             
+##  [9] &quot;agencyName&quot;            &quot;countyName&quot;           
+## [11] &quot;msaName&quot;               &quot;monitorType&quot;          
+## [13] &quot;siteID&quot;                &quot;instrumentID&quot;         
+## [15] &quot;aqsID&quot;                 &quot;pwfslID&quot;              
+## [17] &quot;pwfslDataIngestSource&quot; &quot;telemetryAggregator&quot;  
+## [19] &quot;telemetryUnitID&quot;
 </code></pre>
 
 <pre><code class="r"># Examine the &#39;data&#39; dataframe
@@ -346,18 +343,20 @@ dim(WA$data)
 <pre><code class="r">colnames(WA$data)
 </code></pre>
 
-<pre><code>##  [1] &quot;datetime&quot;  &quot;530330017&quot; &quot;530330080&quot; &quot;530050002&quot; &quot;530330024&quot;
-##  [6] &quot;530330057&quot; &quot;530332004&quot; &quot;530530029&quot; &quot;530530031&quot; &quot;530610005&quot;
-## [11] &quot;530611007&quot; &quot;530630047&quot; &quot;530670013&quot; &quot;530531018&quot; &quot;530272002&quot;
-## [16] &quot;530310003&quot; &quot;530730015&quot; &quot;530251002&quot; &quot;530650004&quot; &quot;530010003&quot;
-## [21] &quot;530750006&quot; &quot;530750003&quot; &quot;530331011&quot; &quot;530210002&quot; &quot;530330037&quot;
-## [26] &quot;530710005&quot; &quot;530750005&quot; &quot;530150015&quot; &quot;530470009&quot; &quot;530370002&quot;
-## [31] &quot;530090013&quot; &quot;530610020&quot; &quot;530070010&quot; &quot;530770015&quot; &quot;530650002&quot;
-## [36] &quot;530470010&quot; &quot;530770009&quot; &quot;530570015&quot; &quot;530130002&quot; &quot;530030004&quot;
-## [41] &quot;530110022&quot; &quot;530579999&quot; &quot;530639997&quot; &quot;530299999&quot; &quot;530639996&quot;
-## [46] &quot;530410004&quot; &quot;530770016&quot; &quot;530090015&quot; &quot;530450007&quot; &quot;530470013&quot;
-## [51] &quot;530570011&quot; &quot;530350007&quot; &quot;530070011&quot; &quot;530330030&quot; &quot;530110024&quot;
-## [56] &quot;530090017&quot;
+<pre><code>##  [1] &quot;datetime&quot;     &quot;530330017_01&quot; &quot;530330080_01&quot; &quot;530050002_01&quot;
+##  [5] &quot;530330024_01&quot; &quot;530330057_01&quot; &quot;530332004_01&quot; &quot;530530029_01&quot;
+##  [9] &quot;530530031_01&quot; &quot;530610005_01&quot; &quot;530611007_01&quot; &quot;530630047_01&quot;
+## [13] &quot;530670013_01&quot; &quot;530531018_01&quot; &quot;530272002_01&quot; &quot;530310003_01&quot;
+## [17] &quot;530730015_01&quot; &quot;530251002_01&quot; &quot;530650004_01&quot; &quot;530010003_01&quot;
+## [21] &quot;530750006_01&quot; &quot;530750003_01&quot; &quot;530331011_01&quot; &quot;530210002_01&quot;
+## [25] &quot;530330037_01&quot; &quot;530710005_01&quot; &quot;530750005_01&quot; &quot;530150015_01&quot;
+## [29] &quot;530470009_01&quot; &quot;530370002_01&quot; &quot;530090013_01&quot; &quot;530610020_01&quot;
+## [33] &quot;530070010_01&quot; &quot;530770015_01&quot; &quot;530650002_01&quot; &quot;530470010_01&quot;
+## [37] &quot;530770009_01&quot; &quot;530570015_01&quot; &quot;530130002_01&quot; &quot;530030004_01&quot;
+## [41] &quot;530110022_01&quot; &quot;530579999_01&quot; &quot;530639997_01&quot; &quot;530299999_01&quot;
+## [45] &quot;530639996_01&quot; &quot;530410004_01&quot; &quot;530770016_01&quot; &quot;530090015_01&quot;
+## [49] &quot;530450007_01&quot; &quot;530470013_01&quot; &quot;530570011_01&quot; &quot;530350007_01&quot;
+## [53] &quot;530070011_01&quot; &quot;530330030_01&quot; &quot;530110024_01&quot; &quot;530090017_01&quot;
 </code></pre>
 
 <pre><code class="r"># This should always be true
@@ -373,6 +372,49 @@ all(rownames(WA$meta) == colnames(WA$data[,-1]))
 all of which begin with <code>monitor_</code>. If you need to do something that the package functions do not
 provide you can manipulate <code>ws_monitor</code> objects directly as long as you retain the structure
 of the data model.</p>
+
+<p>Functions that accept and return <code>ws_monitor</code> objects include:</p>
+
+<ul>
+<li><code>monitor_aqi()</code></li>
+<li><code>monitor_collapse()</code></li>
+<li><code>monitor_dailyStatistic()</code></li>
+<li><code>monitor_dailyThreshold()</code></li>
+<li><code>monitor_join()</code></li>
+<li><code>monitor_nowcast()</code></li>
+<li><code>monitor_reorder()</code></li>
+<li><code>monitor_replaceData()</code></li>
+<li><code>monitor_rollingMean()</code></li>
+<li><code>monitor_scaleData()</code></li>
+<li><code>monitor_subset()</code></li>
+<li><code>monitor_subsetBy()</code></li>
+<li><code>monitor_subsetByDistance()</code></li>
+<li><code>monitor_trim()</code></li>
+</ul>
+
+<p>These functions can be used with the <strong>magrittr</strong> package <code>%&gt;%</code> pipe as in the following example:</p>
+
+<pre><code class="r"># Calculate daily means for the Methow from monitors in Twisp and Winthrop
+TwispID &lt;- &#39;530470009_01&#39;
+WinthropID &lt;- &#39;530470010_01&#39;
+Methow_Valley_JulyMeans &lt;- Northwest_Megafires %&gt;%
+  monitor_subset(monitorIDs=c(TwispID,WinthropID)) %&gt;%
+  monitor_collapse(monitorID=&#39;MethowValley&#39;) %&gt;%
+  monitor_subset(tlim=c(20150701,20150731), timezone=&#39;America/Los_Angeles&#39;) %&gt;%
+  monitor_dailyStatistic(minHours=18)
+# Look at the first week
+Methow_Valley_JulyMeans$data[1:7,]
+</code></pre>
+
+<pre><code>##     datetime MethowValley
+## 1 2015-07-01      5.06875
+## 2 2015-07-02      5.45625
+## 3 2015-07-03      6.64375
+## 4 2015-07-04     10.60625
+## 5 2015-07-05     10.33750
+## 6 2015-07-06     13.93750
+## 7 2015-07-07     30.68542
+</code></pre>
 
 <p>The following code mixes use of package functions with direct manipulation of the <code>ws_monitor</code> object.</p>
 
@@ -397,10 +439,10 @@ data &lt;- Spokane_daily_3hr$data[,-1] # exclude the &#39;datetime&#39; column
 cor(data, use=&#39;complete.obs&#39;)
 </code></pre>
 
-<pre><code>##           530630047 530639997 530639996
-## 530630047 1.0000000 0.9418159 0.9416837
-## 530639997 0.9418159 1.0000000 0.9520286
-## 530639996 0.9416837 0.9520286 1.0000000
+<pre><code>##              530630047_01 530639997_01 530639996_01
+## 530630047_01    1.0000000    0.9148673    0.9159997
+## 530639997_01    0.9148673    1.0000000    0.9284175
+## 530639996_01    0.9159997    0.9284175    1.0000000
 </code></pre>
 
 <hr/>

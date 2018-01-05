@@ -22,11 +22,13 @@
 #' If \code{centerLon}, \code{centerMap} or \code{zoom} are not specified, appropriate values
 #' will be calcualted using data from the \code{ws_monitor$meta} dataframe.
 #' @examples
+#' \dontrun{
 #' N_M <- Northwest_Megafires
 #' # monitorLeaflet(N_M) # to identify Spokane monitorIDs
 #' Spokane <- monitor_subsetBy(N_M, stringr::str_detect(N_M$meta$monitorID,'^53063'))
 #' Spokane <- monitor_subset(Spokane, tlim=c(20150815, 20150831))
 #' monitorEsriMap(Spokane)
+#' }
 
 monitorEsriMap <- function(ws_monitor,
                            slice=get('max'),
@@ -43,6 +45,11 @@ monitorEsriMap <- function(ws_monitor,
                            cex=par("cex")*2.0,
                            pch=16,
                            ...) {
+  
+  # Sanity check
+  if ( monitor_isEmpty(ws_monitor) ) {
+    stop("ws_monitor object contains zero monitors")
+  }
   
   # ----- Data Preparation ----------------------------------------------------
   

@@ -9,11 +9,14 @@
 #' \dontrun{
 #' sm13 <- wrcc_createMonitorObject(20150101, 20151231, stationID='sm13')
 #' sm13$meta[,c('stateCode','countyName','siteName','monitorID')]
-#' Deschutes <- monitor_subset(sm13, monitorIDs='Smoke..13__001')
+#' Deschutes <- monitor_subset(sm13, monitorIDs='lon_.121.453_lat_43.878_wrcc.sm13')
 #' Deschutes <- monitor_trim(Deschutes)
 #' monitorPlot_dailyBarplot(Deschutes)
 #' }
 monitor_trim <- function(ws_monitor) {
+  
+  # Sanity check
+  if ( monitor_isEmpty(ws_monitor) ) stop("ws_monitor object contains zero monitors")
   
   # Vectors of first and last valid indices excluding 'datetime'
   firstValids <- unlist(lapply(ws_monitor$data, function(x) { min(which(!is.na(x))) }))[-1]

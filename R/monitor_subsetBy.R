@@ -1,6 +1,6 @@
 #' @keywords ws_monitor
 #' @export
-#' @title Subset Monitoring Data
+#' @title Subset ws_monitor Object with a Filter
 #' @param ws_monitor \emph{ws_monitor} object
 #' @param filter a filter to use on the ws_monitor object
 #' @return A \emph{ws_monitor} object with a subset of the input ws_monitor object.
@@ -19,6 +19,9 @@ monitor_subsetBy <- function(ws_monitor, filter) {
     stop("ws_monitor object is not of class 'ws_monitor'.")
   }
   
+  # Sanity check
+  if ( monitor_isEmpty(ws_monitor) ) stop("ws_monitor object contains zero monitors")
+  
   # Create a condition call, basically an expression that isn't run yet.
   condition_call <- substitute(filter)
   filterString <- paste(as.character(condition_call)[2], as.character(condition_call)[1],
@@ -32,11 +35,12 @@ monitor_subsetBy <- function(ws_monitor, filter) {
   if ( any(stringr::str_detect(filterString, names(ws_monitor$meta))) ) {
     
     metaMask <- eval(condition_call, ws_monitor$meta)
+    metaMask <- replace(metaMask, is.na(metaMask), FALSE) # convert NA to FALSE
     monitorIDs <- ws_monitor$meta$monitorID[metaMask]
     # omit the first 'datetime' column
     data <- ws_monitor$data[,-1]
     dataMask <- names(data) %in% monitorIDs
-    dataMask <- replace(dataMask, is.na(dataMask), FALSE) # drop NAs
+    dataMask <- replace(dataMask, is.na(dataMask), FALSE) # convert NA to FALSE
     # Add back first 'datetime' column
     dataMask <- c(TRUE, dataMask)
     
@@ -50,9 +54,10 @@ monitor_subsetBy <- function(ws_monitor, filter) {
     data <- as.data.frame(ws_monitor$data[,-1])
     colnames(data) <- colnames(ws_monitor$data)[-1]
     dataMask <- apply(data, 2, FUN)
-    dataMask <- replace(dataMask, is.na(dataMask), FALSE) # drop NAs
+    dataMask <- replace(dataMask, is.na(dataMask), FALSE) # convert NA to FALSE
     monitorIDs <- names(data[dataMask])
     metaMask <- ws_monitor$meta$monitorID %in% monitorIDs
+    metaMask <- replace(metaMask, is.na(metaMask), FALSE) # convert NA to FALSE
     # Add back first 'datetime' column
     dataMask <- c(TRUE, dataMask)
     

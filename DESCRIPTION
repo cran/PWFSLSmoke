@@ -1,6 +1,6 @@
 Type: Package
 Package: PWFSLSmoke
-Version: 0.99.33
+Version: 1.0.3
 Title: Utilities for Working with Air Quality Monitoring Data
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")), 
@@ -21,7 +21,8 @@ Author: Jonathan Callahan [aut, cre],
     Rex Thompson [aut],
     Alice Yang [aut]
 Maintainer: Jonathan Callahan <jonathan.s.callahan@gmail.com>
-Depends: R (>= 3.1.0), dplyr, maps, MazamaSpatialUtils (>= 0.4.4)
+Depends: R (>= 3.1.0), dplyr, magrittr, maps, MazamaSpatialUtils (>=
+        0.4.4)
 Imports: cluster, dygraphs (>= 1.1.1.4), futile.logger, ggmap, httr,
         jsonlite, leaflet (>= 1.0.0), lubridate, maptools, mapproj,
         openair, png, raster, RColorBrewer, RCurl, rgdal, RgoogleMaps,
@@ -40,5 +41,5 @@ Repository: CRAN
 LazyData: true
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-12-12 02:31:00 UTC; jonathan
-Date/Publication: 2017-12-12 17:25:43 UTC
+Packaged: 2018-01-04 23:07:10 UTC; jonathan
+Date/Publication: 2018-01-05 04:23:26 UTC

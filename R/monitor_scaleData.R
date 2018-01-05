@@ -1,6 +1,6 @@
 #' @keywords ws_monitor
 #' @export
-#' @title Scale Monitoring Data
+#' @title Scale ws_monitor Data
 #' @param ws_monitor \emph{ws_monitor} object
 #' @param factor numeric used to scale the data
 #' @description Scale the data in a \emph{ws_monitor} object by mutiplying it with \code{factor}.
@@ -14,6 +14,9 @@ monitor_scaleData <- function(ws_monitor, factor) {
   if ( !"ws_monitor" %in% class(ws_monitor) ) {
     stop("ws_monitor object is not of class 'ws_monitor'.")
   }
+  
+  # Sanity check
+  if ( monitor_isEmpty(ws_monitor) ) stop("ws_monitor object contains zero monitors")
   
   ws_monitor$data[,-1] <- ws_monitor$data[,-1] * factor
   

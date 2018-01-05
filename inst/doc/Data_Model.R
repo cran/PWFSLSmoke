@@ -2,13 +2,13 @@
 knitr::opts_chunk$set(fig.width=7, fig.height=5)
 
 ## ------------------------------------------------------------------------
-library(PWFSLSmoke)
+suppressPackageStartupMessages(library(PWFSLSmoke))
 
 # Get some airnow data for Washington state in the summer of 2015
-N_M <- monitor_subset(Northwest_Megafires, tlim=c(20150801,20150831))
-# To work with AirNow data directly, uncomment the next two lines
-#N_M <- airnow_load(startdate=20150801, enddate=20150831)
-#WA <- monitor_subset(airnow, stateCodes=c("WA"))
+# NONE:  'tlim' is interpreted as UTC unless we specify 'timezone' 
+N_M <- monitor_subset(Northwest_Megafires,
+                      tlim=c(20150801,20150831),
+                      timezone="America/Los_Angeles")
 WA <- monitor_subset(N_M, stateCodes='WA')
 
 # 'ws_monitor' objects can be identified by their class
@@ -25,6 +25,18 @@ colnames(WA$data)
 
 # This should always be true
 all(rownames(WA$meta) == colnames(WA$data[,-1]))
+
+## ----magrittr------------------------------------------------------------
+# Calculate daily means for the Methow from monitors in Twisp and Winthrop
+TwispID <- '530470009_01'
+WinthropID <- '530470010_01'
+Methow_Valley_JulyMeans <- Northwest_Megafires %>%
+  monitor_subset(monitorIDs=c(TwispID,WinthropID)) %>%
+  monitor_collapse(monitorID='MethowValley') %>%
+  monitor_subset(tlim=c(20150701,20150731), timezone='America/Los_Angeles') %>%
+  monitor_dailyStatistic(minHours=18)
+# Look at the first week
+Methow_Valley_JulyMeans$data[1:7,]
 
 ## ------------------------------------------------------------------------
 # Use special knowledge of AirNow IDs to subset airnow data for Spokane county monitors

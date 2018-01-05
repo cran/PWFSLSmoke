@@ -2,11 +2,9 @@
 knitr::opts_chunk$set(fig.width=7, fig.height=5)
 
 ## ----Northwest_Megafires, message=FALSE----------------------------------
-library(PWFSLSmoke)
+suppressPackageStartupMessages(library(PWFSLSmoke))
+
 PacNW <- Northwest_Megafires
-# To work with AirNow data directly, uncomment the next two lines
-#N_M <- airnow_load(startdate=20150531, enddate=20151101)
-#PacNW <- monitor_subset(airnow, stateCodes=c("WA", "OR", "ID"))
 PacNW_24 <- monitor_rollingMean(PacNW, width=24)
 
 ## ----map-----------------------------------------------------------------
@@ -18,14 +16,20 @@ addAQILegend(title="Max AQI", cex=0.7)
 #monitorLeaflet(PacNW_24, slice=max)
 
 ## ----dygraph-------------------------------------------------------------
-NezPerceIDs <- c("160571012","160690012","160690013","160690014","160490003","160491012")
+NezPerceIDs <- c("160571012_01","160690012_01","160690013_01",
+                 "160690014_01","160490003_01","160491012_01")
 NezPerce <- monitor_subset(PacNW, monitorIDs=NezPerceIDs)
 monitorPlot_timeseries(NezPerce, style='gnats')
+addAQILines()
+addAQILegend(cex=0.7)
 
 ## ----august--------------------------------------------------------------
-PacNW <- monitor_subset(PacNW, tlim=c(20150801,20150831), timezone="America/Los_Angeles")
-PacNW_24 <- monitor_subset(PacNW_24, tlim=c(20150801,20150831), timezone="America/Los_Angeles")
-NezPerce <- monitor_subset(NezPerce, tlim=c(20150801,20150831), timezone="America/Los_Angeles")
+PacNW <- monitor_subset(PacNW, tlim=c(20150801,20150831),
+                        timezone="America/Los_Angeles")
+PacNW_24 <- monitor_subset(PacNW_24, tlim=c(20150801,20150831),
+                           timezone="America/Los_Angeles")
+NezPerce <- monitor_subset(NezPerce, tlim=c(20150801,20150831),
+                           timezone="America/Los_Angeles")
 
 ## ----dailyBarplot--------------------------------------------------------
 layout(matrix(seq(6)))
@@ -39,15 +43,15 @@ layout(1)
 
 ## ----acute---------------------------------------------------------------
 data <- PacNW$data[,-1] # omit 'datetime' column
-maxPM25 <- apply(data, 2, max, na.rm=TRUE)
-worstAcute <- names(sort(maxPM25, decreasing=TRUE))[1:6]
+maxPM25 <- apply(data, 2, max, na.rm=TRUE) # maximum value at each site
+worstAcute <- names(sort(maxPM25, decreasing=TRUE))[1:6] # monitorIDs for the six worst sites in PacNW
 intersect(worstAcute, NezPerceIDs)
 PacNW$meta[worstAcute[1],c('siteName','countyName','stateCode')]
 
 ## ------------------------------------------------------------------------
 PacNW_dailyAvg <- monitor_dailyStatistic(PacNW, FUN=mean, minHours=20)
 data <- PacNW_dailyAvg$data[,-1]
-unhealthyDays <- apply(data, 2, function(x){ sum(x >= AQI$breaks_24[4], na.rm=TRUE) })
+unhealthyDays <- apply(data, 2, function(x) { sum(x >= AQI$breaks_24[4], na.rm=TRUE) })
 worstChronic <- names(sort(unhealthyDays, decreasing=TRUE))[1:6]
 intersect(worstChronic, NezPerceIDs)
 PacNW$meta[worstChronic[1],c('siteName','countyName','stateCode')]
@@ -67,8 +71,8 @@ title("August, 2015", line=-1.5, cex.main=2)
 knitr::opts_chunk$set(fig.width=7, fig.height=5)
 
 ## ----tribalMonitors_daily------------------------------------------------
-Omak <- monitor_subset(PacNW, monitorIDs="530470013")
-Kamiah <- monitor_subset(PacNW, monitorIDs="160490003")
+Omak <- monitor_subset(PacNW, monitorIDs="530470013_01")
+Kamiah <- monitor_subset(PacNW, monitorIDs="160490003_01")
 layout(matrix(seq(2)))
 monitorPlot_dailyBarplot(Omak, main="August 2015 Daiy AQI -- Omak, WA",
                          labels_x_nudge=0.8, labels_y_nudge=250)

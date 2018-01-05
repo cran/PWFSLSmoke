@@ -42,7 +42,7 @@
 #' @examples
 #' \dontrun{
 #' N_M <- monitor_subset(Northwest_Megafires, tlim=c(20150815,20150831))
-#' Omak <- monitor_subset(N_M, monitorIDs='530470013')
+#' Omak <- monitor_subset(N_M, monitorIDs='530470013_01')
 #' Omak_nowcast <- monitor_nowcast(Omak, includeShortTerm=TRUE)
 #' monitorPlot_timeseries(Omak, type='l', lwd=2)
 #' monitorPlot_timeseries(Omak_nowcast, add=TRUE, type='l', col='purple', lwd=2)
@@ -76,7 +76,12 @@
 # 5. Compute the NowCast by summing these products and dividing by the sum of the weight factors raised to the power of
 #    how many hours ago the concentration was measured.
 
-monitor_nowcast <- function(ws_monitor, version='pm', includeShortTerm=FALSE) {
+monitor_nowcast <- function(ws_monitor,
+                            version='pm',
+                            includeShortTerm=FALSE) {
+  
+  # Sanity check
+  if ( monitor_isEmpty(ws_monitor) ) stop("ws_monitor object contains zero monitors")
   
   # Set parameters based on version
   if (version =='pm') {
