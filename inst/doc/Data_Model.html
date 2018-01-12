@@ -217,8 +217,8 @@ expect objects of class <code>ws_monitor</code> as their first argument. (<em>&#
 <h2>Monitoring Data</h2>
 
 <p>Monitoring data will typically be obtained from an agency charged with archiving data
-acquired at monitoring sites. For wildifre smoke, the primary pollutant is PM 2.5 and the
-sites archiving this data include [EPA[(<a href="https://www.epa.gov/outdoor-air-quality-data">https://www.epa.gov/outdoor-air-quality-data</a>),
+acquired at monitoring sites. For wildfire smoke, the primary pollutant is PM 2.5 and the
+sites archiving this data include <a href="https://www.epa.gov/outdoor-air-quality-data">EPA</a>,
 <a href="https://www.airnow.gov">AirNow</a>, <a href="https://app.airsis.com/USFS">AIRSIS</a> and <a href="http://www.wrcc.dri.edu">WRCC</a>.</p>
 
 <p>The data model for monitoring data consists of an <strong>R</strong> <code>list</code> with two dataframes: <code>data</code> and <code>meta</code>.</p>
@@ -279,7 +279,7 @@ which we can then explore.</p>
 <pre><code class="r">suppressPackageStartupMessages(library(PWFSLSmoke))
 
 # Get some airnow data for Washington state in the summer of 2015
-# NONE:  &#39;tlim&#39; is interpreted as UTC unless we specify &#39;timezone&#39; 
+# NOTE:  &#39;tlim&#39; is interpreted as UTC unless we specify &#39;timezone&#39; 
 N_M &lt;- monitor_subset(Northwest_Megafires,
                       tlim=c(20150801,20150831),
                       timezone=&quot;America/Los_Angeles&quot;)

@@ -97,7 +97,7 @@ airsis_ESAMQualityControl <- function(tbl,
   badRows <- !(goodLonMask & goodLatMask)
   badRowCount <- sum(badRows)
   if ( badRowCount > 0 ) {
-    logger.info(paste(verb,"%s rows with invalid location information"), badRowCount)
+    logger.debug(paste(verb,"%s rows with invalid location information"), badRowCount)
     badLocations <- paste('(',tbl$Longitude[badRows],',',tbl$Latitude[badRows],')',sep='')
     logger.debug("Bad locations: %s", paste0(badLocations, collapse=", "))
     if ( flagAndKeep ) {
@@ -112,6 +112,13 @@ airsis_ESAMQualityControl <- function(tbl,
   }
   
   tbl <- tbl[goodLonMask & goodLatMask,]
+  
+  # Sanity check -- row count
+  if (nrow(tbl) < 1 && !flagAndKeep) {
+    err_msg <- paste0("No valid PM2.5 data for ", monitorName)
+    logger.warn(err_msg) # This is more of a warning than some error in the data.
+    stop(err_msg, call.=FALSE)
+  }
   
   # ----- Time ----------------------------------------------------------------
   
@@ -178,7 +185,7 @@ airsis_ESAMQualityControl <- function(tbl,
   badQCCount <- sum(!goodMask)
   
   if ( badQCCount > 0 ) {
-    logger.info(paste(verb,"%s rows because of QC logic"), badQCCount)
+    logger.debug(paste(verb,"%s rows because of QC logic"), badQCCount)
     if ( flagAndKeep ) {
       # apply flags
       tblFlagged$QCFlag_badFlow[tbl$rowID[!goodFlow]] <- TRUE
@@ -199,6 +206,13 @@ airsis_ESAMQualityControl <- function(tbl,
   
   tbl <- tbl[goodMask,]
   
+  # Sanity check -- row count
+  if (nrow(tbl) < 1 && !flagAndKeep) {
+    err_msg <- paste0("No valid PM2.5 data for ", monitorName)
+    logger.warn(err_msg) # This is more of a warning than some error in the data.
+    stop(err_msg, call.=FALSE)
+  }
+  
   # ----- Duplicate Hours -----------------------------------------------------
     
   # For hours with multiple records, discard all but the one with the latest processing date/time
@@ -211,7 +225,7 @@ airsis_ESAMQualityControl <- function(tbl,
   uniqueHrMask <- !dupHrMask
   
   if ( dupHrCount > 0 ) {
-    logger.info(paste(verb,"%s duplicate time entries"), dupHrCount)
+    logger.debug(paste(verb,"%s duplicate time entries"), dupHrCount)
     logger.debug("Duplicate Hours (may be >1 per timestamp):  %s", paste0(sort(unique(tbl$TimeStamp[dupHrMask])), collapse=", "))
     if ( flagAndKeep ) {
       # apply flags
@@ -223,6 +237,13 @@ airsis_ESAMQualityControl <- function(tbl,
   }
 
   tbl <- tbl[uniqueHrMask,]
+  
+  # Sanity check -- row count
+  if (nrow(tbl) < 1 && !flagAndKeep) {
+    err_msg <- paste0("No valid PM2.5 data for ", monitorName)
+    logger.warn(err_msg) # This is more of a warning than some error in the data.
+    stop(err_msg, call.=FALSE)
+  }
   
   # ----- More QC -------------------------------------------------------------
   

@@ -5,6 +5,11 @@
 #' @return A \emph{ws_monitor} object combining all monitoring data from \code{monitorList}.
 #' @description Combines a list of one or more \emph{ws_monitor} objects into a single \emph{ws_monitor} object 
 #' by merging the \code{meta} and \code{data} dataframes from each object in \code{monitorList}.
+#' 
+#' When \code{monitorList} contains only two \emph{ws_monitor} objects the \code{monitor_combine()} 
+#' function can be used to extend time ranges for monitorIDs that are found in both \emph{ws_monitor}
+#' objects. This can be used to 'grow' a \emph{ws_monitor} object by appending subsequent months
+#' or years. (Note, however, that this can be CPU intensive process.)
 #' @examples
 #' \dontrun{
 #' monitorList <- list()
@@ -29,15 +34,12 @@ monitor_combine <- function(monitorList) {
   duplicateIDs <- allMonitorIDs[which(duplicated(allMonitorIDs))]
   if ( length(duplicateIDs) > 0 ) {
     
-    logger.warn('Duplicate monitorIDs found: %s', paste0(duplicateIDs, collapse=", "))
-    
     # If there are only two ws_monitor objects we can join them
     if ( length(monitorList) > 2 ) {
-      logger.error("Joining of duplicate monitors requires that monitorList have only two ws_monitor objects.")
       stop("Joining of duplicate monitors requires that monitorList have only two ws_monitor objects.")
     }
     
-    logger.warn('Joining data with shared monitorIDs')
+    warning('Joining data with shared monitorIDs')
     
     # Create a new monitorList which separates mon1-only, mon2-only and joined
     monitorIDs1 <- setdiff(monitorList[[1]]$meta$monitorID, duplicateIDs)

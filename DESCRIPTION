@@ -1,6 +1,6 @@
 Type: Package
 Package: PWFSLSmoke
-Version: 1.0.3
+Version: 1.0.7
 Title: Utilities for Working with Air Quality Monitoring Data
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")), 
@@ -41,5 +41,5 @@ Repository: CRAN
 LazyData: true
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2018-01-04 23:07:10 UTC; jonathan
-Date/Publication: 2018-01-05 04:23:26 UTC
+Packaged: 2018-01-12 22:37:37 UTC; jonathan
+Date/Publication: 2018-01-12 23:18:59 UTC

@@ -11,22 +11,15 @@
 #' and the Olson timezone associated with the locations specified by the
 #' \code{longitude} and \code{latitude} columns of the incoming dataframe.
 #' 
-#' This function requires previous setup of the \pkg{MazamaSpatialUtils} package:
-#' 
-#' \preformatted{
-#' library(MazamaSpatialUtils)
-#' setSpatialDataDir('~/Data/Spatial')
-#' loadSpatialData('NaturalEarthAdm1')
-#' }
-#' 
-#' An error will be generated if these lines have not be previously run.
+#' This function requires previous setup of the \pkg{MazamaSpatialUtils} package with \code{initializeMazamaSpatialUtils()}.
 #' @references \url{https://github.com/MazamaScience/MazamaSpatialUtils}
+#' @seealso \code{\link{initializeMazamaSpatialUtils}}
 
 addMazamaMetadata <- function(df, lonVar="longitude", latVar="latitude", existingMeta=NULL, countryCodes=c('CA','US','MX')) {
   
   # NOTE:  existingMeta is not currently used but is retained as an argument to mimic the signature of addGoogleElevation()
   
-  logger.debug(" ----- addMazamaMetadata() ----- ")
+  logger.trace(" ----- addMazamaMetadata() ----- ")
   
   # Sanity check -- names
   if ( !lonVar %in% names(df) || !latVar %in% names(df) ) {
@@ -48,8 +41,7 @@ addMazamaMetadata <- function(df, lonVar="longitude", latVar="latitude", existin
     
     # NOTE:  Timezone, countryCode and stateCode information is mandatory for ws_monitor objects.
     logger.error("MazamaSpatialUtils package was not properly initialized -- no Mazama metadata added")
-    stop(paste0("MazamaSpatialUtils package was not properly initialized. Please run:\n",
-                "  library(MazamaSpatialUtils); setSpatialDataDir('~/Data/Spatial'); loadSpatialData('NaturalEarthAdm1')"))
+    stop("MazamaSpatialUtils package was not properly initialized. See initializeMazamaSpatialUtils()")
     
   }
   

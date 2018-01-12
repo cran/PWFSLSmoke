@@ -31,7 +31,7 @@ airsisDump_createMonitorObject <- function(filepath,
                                            clusterDiameter=1000,
                                            existingMeta=NULL) {
   
-  logger.info(" ----- airsisDump_createMonitorObject() ----- ")
+  logger.trace(" ----- airsisDump_createMonitorObject() ----- ")
   
   logger.debug("Reading data ...")
   fileString <- readr::read_file(filepath)
@@ -86,7 +86,7 @@ airsisDump_createMonitorObject <- function(filepath,
     ws_monitor <- structure(ws_monitor, class = c("ws_monitor", "list"))
 
     # Reset all negative values that made it through QC to zero
-    logger.debug("Reset negative valus to zero ...")
+    logger.debug("Reset negative values to zero ...")
     ws_monitor <- monitor_replaceData(ws_monitor, data < 0, 0)
     
     monitorList[[name]] <- ws_monitor
