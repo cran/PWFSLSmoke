@@ -8,6 +8,8 @@
 #' 
 #' Avaialble RData and associated log files can be seen at:
 #' \href{https://haze.airfire.org/monitoring/AIRSIS/RData/}{https://haze.airfire.org/monitoring/AIRSIS/RData/}
+#' @seealso \code{\link{airsis_loadDaily}}
+#' @seealso \code{\link{airsis_loadLatest}}
 #' @examples
 #' \dontrun{
 #' airsis <- airsis_load(2017)
@@ -21,10 +23,15 @@ airsis_load <- function(year=2017,
   # Create filepath
   filepath <- paste0(year,"/airsis_PM2.5_",year,".RData")
   
-  # Define a 'connection' object so we can be sure to close it
+  # Define a 'connection' object so we can be sure to close it no matter what happens
   conn <- url(paste0(baseUrl,filepath))
-  ws_monitor <- get(load(conn))
+  result <- try( suppressWarnings(ws_monitor <- get(load(conn))),
+                 silent=TRUE )
   close(conn)
+  
+  if ( "try-error" %in% class(result) ) {
+    stop(paste0("No AIRSIS data available for ",year), call.=FALSE)
+  }
   
   return(ws_monitor)
   
