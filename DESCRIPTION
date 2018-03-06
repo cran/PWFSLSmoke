@@ -1,6 +1,6 @@
 Type: Package
 Package: PWFSLSmoke
-Version: 1.0.10
+Version: 1.0.16
 Title: Utilities for Working with Air Quality Monitoring Data
 Authors@R: c(
     person("Jonathan", "Callahan", email="jonathan.s.callahan@gmail.com", role=c("aut","cre")), 
@@ -13,13 +13,13 @@ Authors@R: c(
     person("Alice", "Yang", email="wenhuy@uw.edu", role=c("aut"))
     )
 Author: Jonathan Callahan [aut, cre],
-    Rohan Aras [aut],
-    Zach Dingels [aut],
-    Jon Hagg [aut],
-    Jimin Kim [aut],
-    Helen Miller [aut],
-    Rex Thompson [aut],
-    Alice Yang [aut]
+  Rohan Aras [aut],
+  Zach Dingels [aut],
+  Jon Hagg [aut],
+  Jimin Kim [aut],
+  Helen Miller [aut],
+  Rex Thompson [aut],
+  Alice Yang [aut]
 Maintainer: Jonathan Callahan <jonathan.s.callahan@gmail.com>
 Depends: R (>= 3.1.0), dplyr, magrittr, maps, MazamaSpatialUtils (>=
         0.4.4)
@@ -44,5 +44,5 @@ Repository: CRAN
 LazyData: true
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2018-01-17 17:52:31 UTC; jonathan
-Date/Publication: 2018-01-17 18:36:19 UTC
+Packaged: 2018-03-05 23:58:01 UTC; jonathan
+Date/Publication: 2018-03-06 04:10:23 UTC
