@@ -2,7 +2,7 @@
 % Please edit documentation in R/airnow_createMonitorObjects.R
 \name{airnow_createMonitorObjects}
 \alias{airnow_createMonitorObjects}
-\title{Obain AirNow Data and Create ws_monitor Objects}
+\title{Obain AirNow data and create ws_monitor objects}
 \usage{
 airnow_createMonitorObjects(parameters = NULL,
   startdate = strftime(lubridate::now(), "\%Y\%m\%d", tz = "UTC"),
@@ -23,7 +23,7 @@ airnow_createMonitorObjects(parameters = NULL,
 List where each element contains a \emph{ws_monitor} object for a unique parameter (e.g: "PM2.5", "NOX").
 }
 \description{
-This function uses the \link{airnow_downloadParseData} function 
+This function uses the \link{airnow_downloadParseData} function
 to download monthly dataframes of AirNow data and restructures that data into a format that is compatible
 with the PWFSLSmoke package \emph{ws_monitor} data model.
 

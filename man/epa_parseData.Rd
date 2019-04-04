@@ -2,7 +2,7 @@
 % Please edit documentation in R/epa_parseData.R
 \name{epa_parseData}
 \alias{epa_parseData}
-\title{Parse Data from EPA}
+\title{Parse EPA data}
 \usage{
 epa_parseData(zipFile = NULL)
 }
@@ -25,7 +25,7 @@ Available parameters include:
 \item{PM2.5}
 \item{PM10}
 \item{Wind}
-\item{Temperatue}
+\item{Temperature}
 \item{Barometric_Pressure}
 \item{RH_and_Dewpoint}
 \item{HAPs}

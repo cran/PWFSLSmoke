@@ -2,7 +2,7 @@
 % Please edit documentation in R/airsis_createMonitorObject.R
 \name{airsis_createMonitorObject}
 \alias{airsis_createMonitorObject}
-\title{Obain AIRSIS Data and Create ws_monitor Object}
+\title{Obain AIRSIS data and create ws_monitor object}
 \usage{
 airsis_createMonitorObject(startdate = strftime(lubridate::now(),
   "\%Y010100", tz = "UTC"), enddate = strftime(lubridate::now(),
@@ -79,7 +79,7 @@ The downloaded CSV may be saved to a local file by providing an argument to the 
 \dontrun{
 initializeMazamaSpatialUtils()
 usfs_1013 <- airsis_createMonitorObject(20150301, 20150831, 'USFS', unitID='1013')
-monitorLeaflet(usfs_1013)
+monitor_leaflet(usfs_1013)
 }
 }
 \seealso{

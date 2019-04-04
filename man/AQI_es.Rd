@@ -12,13 +12,13 @@ AQI_es
 Official AQI levels, names and colors are provided in a list for easy coloring and labeling.
 }
 \details{
-AQI breaks and associated names and colors (spanish language)
+AQI breaks and associated names and colors (Spanish language)
 
 
 The \code{AQI_es} object contains spanish language text.
 
-AQI breaks and colors are defined in
-\url{https://airnow.gov/sites/default/files/2018-09/aqi-technical-assistance-document-sept-2018_0.pdf}
+AQI breaks and colors are defined at
+\url{https://docs.airnowapi.org/aq101}
 }
 \note{
 The low end of each break category is used as the breakpoint.

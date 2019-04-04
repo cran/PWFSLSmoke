@@ -2,14 +2,16 @@
 % Please edit documentation in R/distance.R
 \name{distance}
 \alias{distance}
-\title{Calculate the Distance Between Points}
+\title{Calculate distances between points}
 \usage{
 distance(targetLon, targetLat, longitude, latitude)
 }
 \arguments{
-\item{targetLon}{longitude (decimal degrees) of the point from which distances are calculated}
+\item{targetLon}{longitude (decimal degrees) of the point from which
+distances are calculated}
 
-\item{targetLat}{latitude (decimal degrees) of the point from which distances are calculated}
+\item{targetLat}{latitude (decimal degrees) of the point from which
+distances are calculated}
 
 \item{longitude}{vector of longitudes for which a distance is calculated}
 
@@ -19,7 +21,7 @@ distance(targetLon, targetLat, longitude, latitude)
 Vector of distances in km.
 }
 \description{
-This funciton uses the Haversine forumula for calculating great
+This function uses the Haversine forumula for calculating great
 circle distances between points. This formula is purpoted to work better
 than the spherical law of cosines for very short distances.
 }
@@ -30,7 +32,4 @@ SEA_lat <- 47.4502
 PDX_lon <- -122.5951
 PDX_lat <- 45.5898
 distance(SEA_lon, SEA_lat, PDX_lon, PDX_lat)
-}
-\references{
-\url{https://www.r-bloggers.com/great-circle-distance-calculations-in-r/}
 }

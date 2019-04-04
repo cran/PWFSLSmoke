@@ -1,6 +1,9 @@
 #' @keywords plotting
 #' @export
+#' @import MazamaCoreUtils
+#'
 #' @title Download a Spatial Raster Object from ESRI
+#'
 #' @param centerLon map center longitude
 #' @param centerLat map center latitude
 #' @param maptype map type
@@ -41,17 +44,18 @@
 #' }
 #' @seealso \code{\link{esriMap_plotOnStaticMap}}
 
-esriMap_getMap <- function(centerLon = NULL,
-                           centerLat = NULL,
-                           bboxString = NULL,
-                           bboxSR = "4326",
-                           maptype = "worldStreetMap",
-                           zoom = 12,
-                           width = 640,
-                           height = 640,
-                           crs = sp::CRS("+init=epsg:4326"),
-                           additionalArgs = NULL) {
-
+esriMap_getMap <- function(
+  centerLon = NULL,
+  centerLat = NULL,
+  bboxString = NULL,
+  bboxSR = "4326",
+  maptype = "worldStreetMap",
+  zoom = 12,
+  width = 640,
+  height = 640,
+  crs = sp::CRS("+init=epsg:4326"),
+  additionalArgs = NULL
+) {
 
   # Calculate degrees per pixel from zoom to determine bbox:
   # * google maps tiles are 256x256 pixels
@@ -108,27 +112,44 @@ esriMap_getMap <- function(centerLon = NULL,
   jsonUrl <- paste0(url, "&f=json")
 
   # Get ESRI JSON map metadata
-  try({logger.trace("ESRI json URL: %s", jsonUrl)}, silent = TRUE)
+  try(logger.trace("ESRI json URL: %s", jsonUrl), silent = TRUE)
   response <- httr::GET(jsonUrl)
+  status_code <- httr::status_code(response)
+  try({logger.trace("ESRI JSON response status code: %s", status_code)}, silent = TRUE)
+  try({logger.trace( utils::capture.output(utils::str(httr::headers(response))) )}, silent = TRUE)
   if ( httr::http_error(response) ) {
-    stop(paste0("ESRI JSON request failed with: ",httr::content(response)))
+    if (status_code == 502) {
+      stop("ESRI JSON request failed with: 502 Proxy Error")
+    } else {
+      stop(paste0("ESRI JSON request failed with: ",httr::content(response)))
+    }
   }
   mapInfo <- jsonlite::fromJSON(httr::content(response))
 
   # Get ESRI map png
-  try({logger.trace("ESRI png URL: %s", pngUrl)}, silent = TRUE)
+
+
+  try(logger.trace("ESRI png URL: %s", pngUrl), silent = TRUE)
   response <- httr::GET(pngUrl)
+  status_code <- httr::status_code(response)
+  try({logger.trace("ESRI PNG status code: %s", status_code)}, silent = TRUE)
+  try({logger.trace( utils::capture.output(utils::str(httr::headers(response))) )}, silent = TRUE)
   if ( httr::http_error(response) ) {
-    stop(paste0("ESRI PNG request failed with: ",httr::content(response)))
+    if (status_code == 502) {
+      stop("ESRI PNG request failed with: 502 Proxy Error")
+    } else {
+      stop(paste0("ESRI PNG request failed with: ",httr::content(response)))
+    }
   }
+
   imageArray <- httr::content(response, type="image/png")
-  try({logger.trace("successfully downloaded ESRI map")}, silent = TRUE)
-  try({logger.trace("ESRI Map Info: %s", utils::str(mapInfo))}, silent = TRUE)
+  try(logger.trace("successfully downloaded ESRI map"), silent = TRUE)
+  try(logger.trace("ESRI Map Info: %s", utils::str(mapInfo)), silent = TRUE)
 
   # Convert PNG into a Raster object
   mapRaster <- raster::brick(ncol=mapInfo$width,
-                       nrow=mapInfo$height,
-                       nl = 3)
+                             nrow=mapInfo$height,
+                             nl = 3)
   mapRaster <- raster::setValues(mapRaster, imageArray*255)
   if (width == height) {mapRaster <- raster::t(mapRaster)} # rows and columns are confused when width = height
 

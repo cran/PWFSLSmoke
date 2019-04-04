@@ -2,7 +2,7 @@
 % Please edit documentation in R/addEsriAddress.R
 \name{addEsriAddress}
 \alias{addEsriAddress}
-\title{Add Address Information to a Dataframe}
+\title{Add address information to a dataframe}
 \usage{
 addEsriAddress(df, lonVar = "longitude", latVar = "latitude",
   existingMeta = NULL)
@@ -20,7 +20,7 @@ addEsriAddress(df, lonVar = "longitude", latVar = "latitude",
 Input dataframe with additional columns: \code{siteName, countyName}.
 }
 \description{
-ESRI APIs are used to determine 
+ESRI APIs are used to determine
 address information associated with the locations specified by the
 \code{longitude} and \code{latitude} columns of the incoming dataframe.
 }

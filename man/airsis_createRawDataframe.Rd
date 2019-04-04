@@ -2,7 +2,7 @@
 % Please edit documentation in R/airsis_createRawDataframe.R
 \name{airsis_createRawDataframe}
 \alias{airsis_createRawDataframe}
-\title{Obain AIRSIS Data and Create a Raw Tibble}
+\title{Obain AIRSIS data and parse into a raw tibble}
 \usage{
 airsis_createRawDataframe(startdate = strftime(lubridate::now(),
   "\%Y010100", tz = "UTC"), enddate = strftime(lubridate::now(),
@@ -12,24 +12,24 @@ airsis_createRawDataframe(startdate = strftime(lubridate::now(),
   saveFile = NULL, flagAndKeep = FALSE)
 }
 \arguments{
-\item{startdate}{desired start date (integer or character representing YYYYMMDD[HH])}
+\item{startdate}{Desired start date (integer or character representing YYYYMMDD[HH]).}
 
-\item{enddate}{desired end date (integer or character representing YYYYMMDD[HH])}
+\item{enddate}{Desired end date (integer or character representing YYYYMMDD[HH]).}
 
-\item{provider}{identifier used to modify baseURL \code{['APCD'|'USFS']}}
+\item{provider}{Identifier used to modify baseURL \code{['APCD'|'USFS']}.}
 
-\item{unitID}{character or numeric AIRSIS unit identifier}
+\item{unitID}{Character or numeric AIRSIS unit identifier.}
 
-\item{clusterDiameter}{diameter in meters used to determine the number of clusters (see \code{addClustering})}
+\item{clusterDiameter}{Diameter in meters used to determine the number of clusters (see \code{addClustering}).}
 
-\item{baseUrl}{base URL for data queries}
+\item{baseUrl}{Base URL for data queries.}
 
-\item{saveFile}{optional filename where raw CSV will be written}
+\item{saveFile}{Optional filename where raw CSV will be written.}
 
-\item{flagAndKeep}{flag, rather then remove, bad data during the QC process}
+\item{flagAndKeep}{Flag, rather then remove, bad data during the QC process.}
 }
 \value{
-Raw tibblee of AIRSIS data.
+Raw tibble of AIRSIS data.
 }
 \description{
 Obtains monitor data from an AIRSIS webservice and converts
@@ -47,13 +47,16 @@ Steps involved include:
 }
 }
 \note{
-The downloaded CSV may be saved to a local file by providing an argument to the \code{saveFile} parameter.
+The downloaded CSV may be saved to a local file by providing an argument
+to the \code{saveFile} parameter.
 }
 \examples{
 \dontrun{
-raw <- airsis_createRawDataframe(startdate=20160901, provider='USFS', unitID='1033')
+raw <- airsis_createRawDataframe(startdate = 20160901,
+                                 provider = 'USFS',
+                                 unitID = '1033')
 raw <- raw_enhance(raw)
-rawPlot_timeseries(raw,tlim=c(20160908,20160917))
+rawPlot_timeseries(raw, tlim = c(20160908,20160917))
 }
 
 }

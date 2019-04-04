@@ -2,7 +2,7 @@
 % Please edit documentation in R/airnow_createDataDataframes.R
 \name{airnow_createDataDataframes}
 \alias{airnow_createDataDataframes}
-\title{Return Reshaped, Dataframes of AirNow Data}
+\title{Return reshaped dataframes of AirNow data}
 \usage{
 airnow_createDataDataframes(parameters = NULL, startdate = "",
   hours = 24)
@@ -18,7 +18,7 @@ airnow_createDataDataframes(parameters = NULL, startdate = "",
 List of dataframes where each dataframe contains all data for a unique parameter (e.g: "PM2.5", "NOX").
 }
 \description{
-This function uses the \link{airnow_downloadParseData} function 
+This function uses the \link{airnow_downloadParseData} function
 to download monthly dataframes of AirNow data and restructures that data into a format that is compatible
 with the PWFSLSmoke package \emph{ws_monitor} data model.
 

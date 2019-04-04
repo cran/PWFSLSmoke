@@ -1,7 +1,10 @@
 #' @keywords internal
 #' @export
+#' @import MazamaCoreUtils
 #' @importFrom utils installed.packages
-#' @title Add Address Information to a Dataframe
+#'
+#' @title Add address information to a dataframe
+#'
 #' @param df dataframe with geolocation information (\emph{e.g.} those created by \code{wrcc_qualityControl()} or \code{airsis_qualityControl})
 #' @param lonVar name of longitude variable in the incoming dataframe
 #' @param latVar name of the latitude variable in the incoming dataframe
@@ -14,14 +17,19 @@
 #' @return Input dataframe with additional columns: \code{siteName, countyName}.
 #' @references \url{https://developers.google.com/maps/documentation/geocoding/intro}
 
-addGoogleAddress <- function(df, lonVar="longitude", latVar="latitude", existingMeta=NULL) {
+addGoogleAddress <- function(
+  df,
+  lonVar = "longitude",
+  latVar = "latitude",
+  existingMeta = NULL
+) {
 
-  ###logger.trace(" ----- addGoogleAddress() ----- ")
+  ###logger.debug(" ----- addGoogleAddress() ----- ")
 
   message("addGoogleAddress() is currently disabled after discontinuation of free querys in July, 2018")
 
   # Sanity check -- make sure df does not have class "tbl_df" or "tibble"
-  df <- as.data.frame(df, stringsAsFactors=FALSE)
+  df <- as.data.frame(df, stringsAsFactors = FALSE)
 
   # Sanity check -- names
   if ( !lonVar %in% names(df) || !latVar %in% names(df) ) {
@@ -37,9 +45,9 @@ addGoogleAddress <- function(df, lonVar="longitude", latVar="latitude", existing
   lons <- df[[lonVar]]
   lats <- df[[latVar]]
 
-  # ----- Add siteName from Google API ---------------------------
+  # ----- Add siteName from Google API -----------------------------------------
 
-  logger.debug("Getting site names for %s location(s)", nrow(df))
+  logger.trace("Getting site names for %s location(s)", nrow(df))
 
   # When siteName is missing, create one similar to AirNow with "locality-route"
 
@@ -47,7 +55,7 @@ addGoogleAddress <- function(df, lonVar="longitude", latVar="latitude", existing
   # (2500 queries allowed per day in August, 2015)
   if ('ggmap' %in% installed.packages()[,1]) {
 
-    for (i in 1:nrow(df)) {
+    for ( i in seq_len(nrow(df)) ) {
 
       # NOTE:  monitorID for AIRSIS and WRCC contains location information and will always
       # NOTE:  be associated with a unique siteName. Reusing metadata will dramatically
@@ -78,16 +86,16 @@ addGoogleAddress <- function(df, lonVar="longitude", latVar="latitude", existing
         location <- c(df[i,lonVar],df[i,latVar])
         logger.trace("\tgoogle address request for location = %s, %s", location[1], location[2])
         if ( !anyNA(location) ) {
-          address <- suppressMessages( ggmap::revgeocode(location, output='more') )
+          address <- suppressMessages( ggmap::revgeocode(location, output = 'more') )
           # NOTE:  revgeocode can fail if you have too may Google requests in a day
-          result <- try( df$siteName[i] <- paste(address$locality,address$route,sep='-'),
-                         silent=TRUE ) # don't show errors
+          result <- try( df$siteName[i] <- paste(address$locality,address$route,sep = '-'),
+                         silent = TRUE ) # don't show errors
           if ( "try-error" %in% class(result) ) {
             logger.warn("Google geocoding may have failed. Have you gone over the 2.5K/day limit? (2017)")
           }
           # NOTE:  administrative_area_level_2 is not always present
           try( df$countyName[i] <- stringr::str_replace(address$administrative_area_level_2,' County',''),
-               silent=TRUE ) # don't show errors
+               silent = TRUE ) # don't show errors
         }
 
       }

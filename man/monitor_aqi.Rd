@@ -24,11 +24,11 @@ Nowcast and AQI algorithms are applied to the data in the ws_monitor object.
 \dontrun{
 ws_monitor <- monitor_subset(Northwest_Megafires, tlim=c(20150815,20150831))
 aqi <- monitor_aqi(ws_monitor)
-monitorPlot_timeseries(aqi, monitorID=aqi$meta$monitorID[1], ylab="PM25 AQI")
+monitor_timeseriesPlot(aqi, monitorID=aqi$meta$monitorID[1], ylab="PM25 AQI")
 }
 }
 \references{
-\url{https://airnow.gov/sites/default/files/2018-09/aqi-technical-assistance-document-sept-2018_0.pdf}
+\url{https://docs.airnowapi.org/aq101}
 
 \url{https://www.ecfr.gov/cgi-bin/retrieveECFR?n=40y6.0.1.1.6#ap40.6.58_161.g}
 }
