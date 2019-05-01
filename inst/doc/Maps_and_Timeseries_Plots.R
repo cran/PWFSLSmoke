@@ -56,20 +56,6 @@ worstChronic <- names(sort(unhealthyDays, decreasing=TRUE))[1:6]
 dplyr::intersect(worstChronic, NezPerceIDs)
 PacNW$meta[worstChronic[1],c('siteName','countyName','stateCode')]
 
-## ---- echo=FALSE---------------------------------------------------------
-knitr::opts_chunk$set(fig.width=5, fig.height=5)
-
-## ----googleMap-----------------------------------------------------------
-fireLons <- c(-118.461,-117.679,-120.039,-119.002,-119.662)
-fireLats <- c(48.756,46.11,47.814,48.338,48.519)
-monitor_esriMap(PacNW_dailyAvg, zoom=7, centerLon=-118, centerLat=47, slice=max)
-addIcon('redFlame', fireLons, fireLats, expansion=.002)
-addAQILegend(cex=0.8)
-title("August, 2015", line=-1.5, cex.main=2)
-
-## ---- echo=FALSE---------------------------------------------------------
-knitr::opts_chunk$set(fig.width=7, fig.height=5)
-
 ## ----tribalMonitors_daily------------------------------------------------
 Omak <- monitor_subset(PacNW, monitorIDs="530470013_01")
 Kamiah <- monitor_subset(PacNW, monitorIDs="160490003_01")

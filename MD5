@@ -1,5 +1,5 @@
-3dd311814a8d8d3002d9305bea9dde86 *DESCRIPTION
-9d00de7737f75a07f6e9031effbbc9ac *NAMESPACE
+44782c1a3e9e301f4381ffb3834e5219 *DESCRIPTION
+4dc26277ee4c621130f0d82cf0246d74 *NAMESPACE
 e9dafb15a9bd7e041aea3927da2fb648 *R/PWFSLSmoke-deprecated.R
 3a5183156184d58543e80d0ec202b9f9 *R/PWFSLSmoke.R
 a3953e8a514a29e79b545dc49d6b80cc *R/addAQILegend.R
@@ -49,6 +49,7 @@ d4c1aaee23f7e56390d27c5f450d98b5 *R/airsis_parseData.R
 846d9b414a8bc4d2a117c6a21922f0ee *R/aqiColors.R
 78c49bd1f5c2a9b45543377237c04b93 *R/aqiPalette.R
 e512f3a6a361fe5aed2764a49d9b0232 *R/createEmptyMetaDataframe.R
+0db10404e3e029802b3ed7a1af7e7386 *R/createEmptyMonitor.R
 761a360257c2dec55e588a9f8079698b *R/distance.R
 c7142922557b10e0184f167e8cb0d7ab *R/downloadDataFile.R
 a778f4dbdd6a353847a000d0149f69c1 *R/epa_createDataDataframe.R
@@ -81,7 +82,7 @@ c94640735b6604b9b634f5f5bd440300 *R/monitor_downloadDaily.R
 c7ecd6659ecc2c87c8a94286647928f6 *R/monitor_dygraph.R
 c71794c85e37cd397bb02d78f1296055 *R/monitor_esriMap.R
 0264f1045367ebbe12e6491d16b1caed *R/monitor_extractDataFrame.R
-a7b93d8dd6bd354e171570555fcb43f2 *R/monitor_getCurrentStatus.R
+eb40f43b0bdf77fc47bef04e95874745 *R/monitor_getCurrentStatus.R
 a50208ba20f3d7c3404d0bb62c446360 *R/monitor_getDailyMean.R
 cb5c5deeac7bcc76a7a119f43406b487 *R/monitor_hourlyBarplot.R
 d621ff50492198a01546ea6a3fe5993a *R/monitor_isEmpty.R
@@ -94,7 +95,7 @@ ee7141e209e50e936a39758765f93fc0 *R/monitor_load.R
 e012c93ba25f139eb418a5a8179d433a *R/monitor_loadAnnual.R
 b4642826a88cea14ac18a5cb5d91fde9 *R/monitor_loadDaily.R
 5d6b1576e66d4d0e08031f3aea6b7478 *R/monitor_loadLatest.R
-f2e89d3c5156039e2b04c53bfab8ac41 *R/monitor_map.R
+658c81007bd986304b545f84239ac9be *R/monitor_map.R
 bc94244b8f04de926d5d7c640bfa875d *R/monitor_noDataPlot.R
 9417907160c8cd9b96a02b65129f945e *R/monitor_nowcast.R
 88a882f28f40b578ec28d1f79d6f33c8 *R/monitor_performance.R
@@ -105,6 +106,7 @@ cdc4ff9ad62ef6973fd08d1f8f6c97ea *R/monitor_replaceData.R
 b46aeecc69160e03779846398a691cc8 *R/monitor_rollingMean.R
 575f8168ec03936e0465ef7e3a661925 *R/monitor_rollingMeanPlot.R
 e532ed7441733ad187a40583f5f5ce5f *R/monitor_scaleData.R
+d5ffab6e1b8c82a7cf897b85d3ce0c47 *R/monitor_stamenmap.R
 7436795b40c2f031a90019cf5a1b7bd4 *R/monitor_subset.R
 64084c6685e79f285a976371fe5d804a *R/monitor_subsetBy.R
 73e7ad01d5a74ae90e8fe0c0ec516f7a *R/monitor_subsetByDistance.R
@@ -132,6 +134,8 @@ c1dc16e10b36bd39000b437539ef93d6 *R/raw_getHighlightDates.R
 84e9fdd03a889ed9a4145c6790999e0e *R/skill_ROC.R
 2b3e5fd543846d13217d164e95289436 *R/skill_ROCPlot.R
 db167c1fd2610e90f744030ffb06a5ad *R/skill_confusionMatrix.R
+8041e2cddc34a5dfe78cc4616a7074e2 *R/staticmap_getStamenmapBrick.R
+fb170d7a159be0d2e59d698035be5597 *R/staticmap_plotRasterBrick.R
 049f690721885146faa86073b442bfb0 *R/tidy_toMonitor.R
 31ecfba33f7d0e9321c538cd7fd01d9e *R/timeInfo.R
 c34c87d36f218ef49083e5ae54af611c *R/upgradeMeta_v1.0.R
@@ -158,15 +162,15 @@ ede020676129b0f000b094c60500f2f2 *build/vignette.rds
 e3fdda64195aacef52f4fb8560f5d892 *inst/doc/Data_Model.R
 0e04b7fb44820c6848bb9e5bbac65f17 *inst/doc/Data_Model.Rmd
 92ab4d510a0e6dc47b59582412e5c3af *inst/doc/Data_Model.html
-0031f04054f7c4cb636b1070d45f0ae9 *inst/doc/Maps_and_Timeseries_Plots.R
-d143709d384250136582fcb3a3112011 *inst/doc/Maps_and_Timeseries_Plots.Rmd
-56662946a48e9adaf22e91bfd38f4b7e *inst/doc/Maps_and_Timeseries_Plots.html
+b01a71af69ce8d70440e3c83ee3629f8 *inst/doc/Maps_and_Timeseries_Plots.R
+d12168fd7bf48ffe76b17e2bb4237286 *inst/doc/Maps_and_Timeseries_Plots.Rmd
+3a688994b0077de89cd37ee4b7b2405d *inst/doc/Maps_and_Timeseries_Plots.html
 4b77218888085218b00bb4dc78aa36d5 *inst/doc/NowCast.R
 c0ef57101235b962765fbf0db49a4df5 *inst/doc/NowCast.Rmd
 1e4af9826f1eb97adef49683703138f4 *inst/doc/NowCast.html
 615f579ed95ac5c630e6f18e28addba1 *inst/doc/PWFSLSmoke.R
-8633d0ebcbcb15d28ce349d12d2e51cf *inst/doc/PWFSLSmoke.Rmd
-75d11508650fb82e198a7a1817e85c17 *inst/doc/PWFSLSmoke.html
+956f6a1fa3952359abac57aa3fa40038 *inst/doc/PWFSLSmoke.Rmd
+826105742aba719bc050b1c9990f9924 *inst/doc/PWFSLSmoke.html
 83a2e89683a077ef571e40a024064dc1 *inst/extdata/generic_configList_example.json
 b5d1b50ade587727cf6fa74ee1119581 *inst/extdata/generic_data_example.csv
 d698771a13da2057b433e5f3a1827f5e *inst/icons/marker_AQI1.png
@@ -239,6 +243,7 @@ b3a6f61ed8159c58356058ec3a240b9e *man/airsis_loadDaily.Rd
 63a338ff800c7c1c1f057487297b6e9e *man/aqiColors.Rd
 c61d955886af195b16a4fbb574c355b8 *man/aqiPalette.Rd
 c2fd7250332ed5a4995d5fe5414811e1 *man/createEmptyMetaDataframe.Rd
+d2478d2673336bd5cd136875b95afb4b *man/createEmptyMonitor.Rd
 5a22d78b52994a06b9df4c53f61bbdd2 *man/distance.Rd
 e4a3028228cbf409c2f5a6e33bda898f *man/downloadDataFile.Rd
 0d3c6eb78eeeb11e0f23a24ed0311292 *man/epa_createDataDataframe.Rd
@@ -288,7 +293,7 @@ a490902accae7e57945a1aeb6de4a0fa *man/monitor_load.Rd
 0dd6a9874e489719e54ab15334db1552 *man/monitor_loadAnnual.Rd
 f5e6151eebbfe3f7131443587a950e53 *man/monitor_loadDaily.Rd
 d198857c664d939046569739b61650ea *man/monitor_loadLatest.Rd
-5d4efdb3d966faade235861b934bf689 *man/monitor_map.Rd
+da569ec51eb9499a842e6e8cb07c98bd *man/monitor_map.Rd
 f35aba391a785377e23b9b98b614782b *man/monitor_noDataPlot.Rd
 3694e48e698884e0062ffb8be94831ac *man/monitor_nowcast.Rd
 4aad74fc31bcb76ac9fc2121007db381 *man/monitor_performance.Rd
@@ -299,6 +304,7 @@ d1ec6c4df057b1a3e1a73e5bc92f951f *man/monitor_reorder.Rd
 8ceaefe6b1e108359ba499114069857c *man/monitor_rollingMean.Rd
 8778f16c6f8f91776e3f478c86e53905 *man/monitor_rollingMeanPlot.Rd
 38a498934b52888a3ac8f13a196c1c72 *man/monitor_scaleData.Rd
+1b479fca789a140785bbb6033d2224af *man/monitor_stamenmap.Rd
 8679e5478c3bb649132e6799bab814d5 *man/monitor_subset.Rd
 01a2f3fa403750f56021767c17d73ee2 *man/monitor_subsetBy.Rd
 7746de7a8403a255353459e619135627 *man/monitor_subsetByDistance.Rd
@@ -324,6 +330,8 @@ eb08938de199b1a58eac1193732bce3b *man/setGoogleApiKey.Rd
 ffcfef074c4150388eab78839d45a115 *man/skill_ROC.Rd
 18e9db028973df43f2e4413e10edc41e *man/skill_ROCPlot.Rd
 fdd0dd5bed3eaf8674c02f3c78fd6539 *man/skill_confusionMatrix.Rd
+ded18bcc4353a5ae66447b5a9a3cf970 *man/staticmap_getStamenmapBrick.Rd
+72c80aad39bd11117b0ca50f527f251d *man/staticmap_plotRasterBrick.Rd
 f15393d3b24db3cfc726987ee2bfd783 *man/tidy_toMonitor.Rd
 2ac4b582e4cdccf34f2b02e516145677 *man/timeInfo.Rd
 abb72acf07af052e5a5ed3bfb5bd55d5 *man/upgradeMeta_v1.0.Rd
@@ -348,6 +356,6 @@ e502c14bbbc4333a52e684e928e5a939 *tests/testthat/test-loadData.R
 e1a3ab43c3f19f8af3ac148251f508a6 *tests/testthat/test-parsedatetime.R
 bd45932d5d9743f3fa894ba349feae09 *tests/testthat/test-timeinfo.R
 0e04b7fb44820c6848bb9e5bbac65f17 *vignettes/Data_Model.Rmd
-d143709d384250136582fcb3a3112011 *vignettes/Maps_and_Timeseries_Plots.Rmd
+d12168fd7bf48ffe76b17e2bb4237286 *vignettes/Maps_and_Timeseries_Plots.Rmd
 c0ef57101235b962765fbf0db49a4df5 *vignettes/NowCast.Rmd
-8633d0ebcbcb15d28ce349d12d2e51cf *vignettes/PWFSLSmoke.Rmd
+956f6a1fa3952359abac57aa3fa40038 *vignettes/PWFSLSmoke.Rmd

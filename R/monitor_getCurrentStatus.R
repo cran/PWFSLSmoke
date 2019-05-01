@@ -363,14 +363,21 @@ if (FALSE) {
 
   get_nAvg <- function(monitorDataColumn, timeIndex, n) {
 
-    if (timeIndex < n) return(NA)
+    if ( is.na(timeIndex) ) return(NA)
 
-    avg <- monitorDataColumn %>%
-      magrittr::extract((timeIndex - n + 1):timeIndex) %>%
-      mean(na.rm = TRUE) %>%
-      round(digits = 1)
+    if ( timeIndex < n ) return(NA)
 
-    if (is.nan(avg)) return(NA)
+    result <- try({
+      avg <- monitorDataColumn %>%
+        magrittr::extract((timeIndex - n + 1):timeIndex) %>%
+        mean(na.rm = TRUE) %>%
+        round(digits = 1)
+    }, silent = TRUE)
+
+    if ( "try-error" %in% class(result) ) return(NA)
+
+    if ( is.nan(avg) ) return(NA)
+
     else return(avg)
 
   }
@@ -428,9 +435,10 @@ if (FALSE) {
 
     # Get previous day in timezone of monitors
     previousDayStart <- endTimeUTC %>%
-      lubridate::with_tz(timezone) %>%
-      lubridate::floor_date(unit = "day") %>%
-      magrittr::subtract(lubridate::ddays(1))
+      lubridate::with_tz(timezone) %>%              # local clock time
+      lubridate::floor_date(unit = "day") %>%       # beginning of endTime day
+      magrittr::subtract(lubridate::ddays(1)) %>%   # yesterday
+      lubridate::round_date(unit = "day")           # handle LST/DST changes
 
     # Pull out daily averages from chosen date for each monitor
     aqiData <- ws_data %>%
@@ -438,10 +446,16 @@ if (FALSE) {
       select(-.data$datetime) %>%
       round(digits = 1)
 
+    # We must return a dataframe with a single row
+    if ( nrow(aqiData) == 0 ) {
+      aqiData[1,] <- NA
+    }
+
     return(aqiData)
 
   }
 
+  # Create a list, organized by timezone,
   aqiDataList <- ws_monitor %>%
     monitor_dailyStatisticList() %>%
     purrr::transpose() %>%
@@ -451,8 +465,19 @@ if (FALSE) {
   # See NOTE on anonymous functions ("~") in purrr
 
   previousDayAQI <- aqiDataList %>%
-    purrr::imap_dfc(~get_previousDayAvg(.x, .y, endTimeUTC)) %>%
+    purrr::imap_dfc(
+      ~get_previousDayAvg(.x, .y, endTimeUTC)       # data, timezone, endtime
+    ) %>%
     tidyr::gather("monitorID", !!colTitle)
+
+  # # DEBUGGING
+  # previousDayByTimezoneList <- list()
+  # for ( timezone in names(aqiDataList) ) {
+  #   previousDayByTimezoneList[[timezone]] <-
+  #     get_previousDayAvg(aqiDataList[[timezone]],
+  #                        timezone,
+  #                        endTimeUTC)
+  # }
 
   return(previousDayAQI)
 
