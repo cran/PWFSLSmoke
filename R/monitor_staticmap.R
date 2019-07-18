@@ -24,18 +24,12 @@
 #' @param ... arguments passed on to \code{staticmap_plotRasterBrick()}
 #'   (\emph{e.g.} destfile, cex, pch, etc.)
 #'
-#' @return Plots a map loaded from arcGIS REST with points for each monitor.
+#' @return A plot with a basemap and colored dots for each monitor.
 #'
-#' @description Plots amap showing \emph{ws_monitor} locations and values.
+#' @description Plots a map showing \emph{ws_monitor} locations and values.
 #'
-#' #' Available \code{maptypes} include:
-#' \itemize{
-#' \item{terrain}
-#' \item{toner}
-#' \item{watercolor}
-#' }
-#'
-#' See \code{\link{staticmap_getStamenmapBrick}} for details.
+#' See \code{\link{staticmap_getRasterBrick}} for a list of available
+#' \code{maptype} options.
 #'
 #' If \code{centerLon}, \code{centerMap} or \code{zoom} are not specified,
 #' appropriate values will be calcualted using data from the
@@ -47,13 +41,13 @@
 #' # monitor_leaflet(N_M) # to identify Spokane monitorIDs
 #' Spokane <- monitor_subsetBy(N_M, stringr::str_detect(N_M$meta$monitorID,'^53063'))
 #' Spokane <- monitor_subset(Spokane, tlim=c(20150815, 20150831))
-#' monitor_stamenmap(Spokane)
+#' monitor_staticmap(Spokane)
 #' }
 #'
 #' @seealso \code{\link{staticmap_getStamenmapBrick}}
 #' @seealso \code{\link{staticmap_plotRasterBrick}}
 
-monitor_stamenmap <- function(
+monitor_staticmap <- function(
   ws_monitor,
   slice = get("max"),
   breaks = AQI$breaks_24,
@@ -84,18 +78,17 @@ monitor_stamenmap <- function(
     Spokane_area <-
       N_M %>%
       monitor_subsetBy(stringr::str_detect(N_M$meta$monitorID,'^53063'))
-    Seattle_area <-
-      N_M %>%
-      monitor_subsetByDistance(longitude = Seattle_10th$meta$longitude,
-                               latitude = Seattle_10th$meta$latitude,
-                               radius = 20)
-    lon <- Seattle_10th$meta$longitude
-    lat <- Seattle_10th$meta$latitude
+    # Seattle_area <-
+    #   N_M %>%
+    #   monitor_subsetByDistance(longitude = Seattle_10th$meta$longitude,
+    #                            latitude = Seattle_10th$meta$latitude,
+    #                            radius = 20)
+    # lon <- Seattle_10th$meta$longitude
+    # lat <- Seattle_10th$meta$latitude
+    #
+    # N_M %>% monitor_subsetByDistance(lon, lat, 2) %>% monitor_staticmap()
 
-    N_M %>% monitor_subsetByDistance(lon, lat, 2) %>% monitor_stamenmap()
-
-
-    ws_monitor <- Seattle_area
+    ws_monitor <- Spokane_area
 
     slice <- get("max")
     breaks <- AQI$breaks_24
@@ -119,11 +112,16 @@ monitor_stamenmap <- function(
   if ( monitor_isEmpty(ws_monitor) )
     stop("ws_monitor object contains zero monitors")
 
-  validMapTypes <- c("terrain", "terrain-background",
-                     "terrain-labels", "terrain-lines",
-                     "toner", "toner-background", "toner-hybrid",
-                     "toner-labels","toner-lines", "toner-lite",
-                     "watercolor")
+  esriMapTypes <- c("world_topo", "world_imagery", "world_terrain",
+                    "de_Lorme", "world_gray", "world_streets")
+
+  stamenMapTypes <- c("terrain", "terrain-background",
+                      "terrain-labels", "terrain-lines",
+                      "toner", "toner-background", "toner-hybrid",
+                      "toner-labels","toner-lines", "toner-lite",
+                      "watercolor")
+
+  validMapTypes <- c(esriMapTypes, stamenMapTypes)
 
   if ( !maptype %in% validMapTypes )
     stop(paste0("Required parameter maptype = '", maptype, "' is not recognized."))
@@ -191,13 +189,13 @@ monitor_stamenmap <- function(
 
   if ( is.null(rasterBrick) ) {
 
-    rasterBrick <- staticmap_getStamenmapBrick(
+    rasterBrick <- staticmap_getRasterBrick(
       centerLon,
       centerLat,
+      maptype = maptype,
+      zoom = zoom,
       width = width,
       height = height,
-      zoom = zoom,
-      maptype = maptype,
       crs = sp::CRS("+init=epsg:4326") # TODO:  Is this correct?
     )
 
