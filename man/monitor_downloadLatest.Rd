@@ -4,9 +4,12 @@
 \alias{monitor_downloadLatest}
 \title{Download recent PM2.5 monitoring data}
 \usage{
-monitor_downloadLatest(parameter = "PM2.5",
+monitor_downloadLatest(
+  parameter = "PM2.5",
   baseUrl = "https://haze.airfire.org/monitoring/latest/RData/",
-  dataDir = "~/Data/monitoring/RData", ...)
+  dataDir = "~/Data/monitoring/RData",
+  ...
+)
 }
 \arguments{
 \item{parameter}{Parameter of interest.}
@@ -40,7 +43,9 @@ Avaialble RData files can be seen at:
 \href{https://haze.airfire.org/monitoring/latest/RData/}{https://haze.airfire.org/monitoring/latest/RData/}
 }
 \examples{
-\dontrun{
+\donttest{
+library(PWFSLSmoke)
+
 monitor_loadLatest() \%>\%
   monitor_subset(stateCodes=CONUS) \%>\%
   monitor_map()

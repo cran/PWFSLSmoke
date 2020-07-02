@@ -29,20 +29,24 @@
 #' @import MazamaCoreUtils
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' library(PWFSLSmoke)
+#'
 #' wa <-
 #'   monitor_loadLatest() %>%
 #'   monitor_subset(stateCodes = "WA")
-#' wa_current_geojson <- monitor_writeCurrentStatusGeoJSON(wa, "wa_monitors.geojson")
+#'
+#' geojson_file <- tempfile(fileext = ".geojson")
+#' wa_current_geojson <- monitor_writeCurrentStatusGeoJSON(wa, geojson_file)
 #' wa_current_list <- jsonlite::fromJSON(wa_current_geojson)
-#' wa_spdf <- rgdal::readOGR(dsn = "wa_monitors.geojson", layer = "OGRGeoJSON")
+#' wa_spdf <- rgdal::readOGR(dsn = geojson_file)
 #' map("state", "washington")
 #' points(wa_spdf)
 #' }
 monitor_writeCurrentStatusGeoJSON <- function(
   ws_monitor,
   filename,
-  datetime = lubridate::now("UTC"),
+  datetime = lubridate::now(tzone = "UTC"),
   properties = NULL,
   propertyNames = NULL,
   metadataList = list()

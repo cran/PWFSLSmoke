@@ -4,13 +4,25 @@
 \alias{monitor_performanceMap}
 \title{Create map of monitor prediction performance}
 \usage{
-monitor_performanceMap(predicted, observed, threshold = AQI$breaks_24[3],
-  cex = par("cex"), sizeBy = NULL, colorBy = "heidikeSkill",
+monitor_performanceMap(
+  predicted,
+  observed,
+  threshold = AQI$breaks_24[3],
+  cex = par("cex"),
+  sizeBy = NULL,
+  colorBy = "heidikeSkill",
   breaks = c(-Inf, 0.5, 0.6, 0.7, 0.8, Inf),
   paletteFunc = grDevices::colorRampPalette(RColorBrewer::brewer.pal(length(breaks),
-  "Purples")[-1]), showLegend = TRUE, legendPos = "topright",
-  stateCol = "grey60", stateLwd = 2, countyCol = "grey70",
-  countyLwd = 1, add = FALSE, ...)
+    "Purples")[-1]),
+  showLegend = TRUE,
+  legendPos = "topright",
+  stateCol = "grey60",
+  stateLwd = 2,
+  countyCol = "grey70",
+  countyLwd = 1,
+  add = FALSE,
+  ...
+)
 }
 \arguments{
 \item{predicted}{ws_monitor object with predicted values}
@@ -65,6 +77,8 @@ size/colors to remain constant.
 }
 \examples{
 \dontrun{
+library(PWFSLSmoke)
+
 # Napa Fires -- October, 2017
 ca <- airnow_load(2017) \%>\%
   monitor_subset(tlim=c(20171001,20171101), stateCodes='CA')
@@ -73,7 +87,7 @@ Napa_Fires <- monitor_subsetByDistance(ca,
                                        longitude = Vallejo$meta$longitude,
                                        latitude = Vallejo$meta$latitude,
                                        radius = 50)
-monitor_performanceMap(ca, Vallejo, cex=2)
+monitor_performanceMap(ca, Vallejo, cex = 2)
 title('Heidke Skill of monitors predicting another monitor.')
 }
 }

@@ -4,10 +4,20 @@
 \alias{monitor_map}
 \title{Static map of monitoring stations}
 \usage{
-monitor_map(ws_monitor, slice = get("max"), breaks = AQI$breaks_24,
-  colors = AQI$colors, pch = par("pch"), cex = par("cex"),
-  stateCol = "grey60", stateLwd = 2, countyCol = "grey70",
-  countyLwd = 1, add = FALSE, ...)
+monitor_map(
+  ws_monitor,
+  slice = get("max"),
+  breaks = AQI$breaks_24,
+  colors = AQI$colors,
+  pch = par("pch"),
+  cex = par("cex"),
+  stateCol = "grey60",
+  stateLwd = 2,
+  countyCol = "grey70",
+  countyLwd = 1,
+  add = FALSE,
+  ...
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -57,10 +67,10 @@ of quantiles to determine a set of breaks appropriate for the number of
 colors.
 }
 \examples{
-\dontrun{
+library(PWFSLSmoke)
+
 N_M <- monitor_subset(Northwest_Megafires, tlim = c(20150821,20150828))
 monitor_map(N_M, cex = 2)
 addAQILegend()
-}
 }
 \keyword{ws_monitor}

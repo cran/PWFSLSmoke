@@ -4,13 +4,19 @@
 \alias{wrcc_createMonitorObject}
 \title{Obtain WRCC data and create ws_monitor object}
 \usage{
-wrcc_createMonitorObject(startdate = strftime(lubridate::now(),
-  "\%Y010100", tz = "UTC"), enddate = strftime(lubridate::now(),
-  "\%Y\%m\%d23", tz = "UTC"), unitID = NULL, clusterDiameter = 1000,
+wrcc_createMonitorObject(
+  startdate = strftime(lubridate::now(tzone = "UTC"), "\%Y010100", tz = "UTC"),
+  enddate = strftime(lubridate::now(tzone = "UTC"), "\%Y\%m\%d23", tz = "UTC"),
+  unitID = NULL,
+  clusterDiameter = 1000,
   zeroMinimum = TRUE,
   baseUrl = "https://wrcc.dri.edu/cgi-bin/wea_list2.pl",
-  saveFile = NULL, existingMeta = NULL, addGoogleMeta = FALSE,
-  addEsriMeta = FALSE, ...)
+  saveFile = NULL,
+  existingMeta = NULL,
+  addGoogleMeta = FALSE,
+  addEsriMeta = FALSE,
+  ...
+)
 }
 \arguments{
 \item{startdate}{desired start date (integer or character representing YYYYMMDD[HH])}
@@ -74,8 +80,10 @@ Note that appropriate values for QC thresholds will depend on the type of monito
 The downloaded CSV may be saved to a local file by providing an argument to the \code{saveFile} parameter.
 }
 \examples{
-\dontrun{
+\donttest{
+library(PWFSLSmoke)
 initializeMazamaSpatialUtils()
+
 sm13 <- wrcc_createMonitorObject(20150301, 20150831, unitID = 'sm13')
 monitor_leaflet(sm13)
 }

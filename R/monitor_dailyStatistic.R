@@ -22,7 +22,7 @@
 #' The returned \emph{ws_monitor} object has a daily time axis where each
 #' \code{datetime} is set to the beginning of each day, 00:00:00, local time.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' N_M <- monitor_subset(Northwest_Megafires, tlim=c(20150801,20150831))
 #' WinthropID <- '530470010_01'
 #' TwispID <- '530470009_01'
@@ -123,7 +123,7 @@ monitor_dailyStatistic <- function(
   dailyMean <- stats::aggregate(data, by=list(day), FUN=get("mean"), na.rm=na.rm)
   # NOTE:  aggregate() resets datetime to the computer timezone which causes
   # NOTE:  trouble later on.
-  dailyMean$datetime <- lubridate::with_tz(dailyMean$datetime, timezone)
+  dailyMean$datetime <- lubridate::with_tz(dailyMean$datetime, tzone = timezone)
   dayStarts <- lubridate::floor_date(dailyMean$datetime, unit="day")
 
   # Sanity check

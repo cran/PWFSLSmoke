@@ -4,9 +4,18 @@
 \alias{monitor_subset}
 \title{Subset ws_monitor Object}
 \usage{
-monitor_subset(ws_monitor, xlim = NULL, ylim = NULL, tlim = NULL,
-  vlim = NULL, monitorIDs = NULL, stateCodes = NULL,
-  countryCodes = NULL, dropMonitors = TRUE, timezone = "UTC")
+monitor_subset(
+  ws_monitor,
+  xlim = NULL,
+  ylim = NULL,
+  tlim = NULL,
+  vlim = NULL,
+  monitorIDs = NULL,
+  stateCodes = NULL,
+  countryCodes = NULL,
+  dropMonitors = TRUE,
+  timezone = "UTC"
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -27,7 +36,7 @@ monitor_subset(ws_monitor, xlim = NULL, ylim = NULL, tlim = NULL,
 
 \item{dropMonitors}{flag specifying whether to remove monitors with no data}
 
-\item{timezone}{Olson timezone passed to \code{link{parseDatetime}} when parsing numeric \code{tlim}}
+\item{timezone}{Olson timezone passed to \code{\link[MazamaCoreUtils]{parseDatetime}} when parsing numeric \code{tlim}}
 }
 \value{
 A \emph{ws_monitor} object with a subset of \code{ws_monitor}.
@@ -44,10 +53,13 @@ after subsetting by \code{tlim} or \code{vlim}).
 If \code{dropMonitors=FALSE}, columns that consist of all \code{NA}s will be retained.
 }
 \examples{
+library(PWFSLSmoke)
+
 N_M <- monitor_subset(Northwest_Megafires, tlim=c(20150701,20150731))
 xlim <- c(-124.73, -122.80)
 ylim <- c(47.20, 48.40)
 Olympic_Peninsula <- monitor_subset(N_M, xlim, ylim)
+
 monitor_map(Olympic_Peninsula, cex=2)
 rect(xlim[1], ylim[1], xlim[2], ylim[2], col=adjustcolor('black',0.1))
 }

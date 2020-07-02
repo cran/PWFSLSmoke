@@ -57,14 +57,16 @@
 #' @seealso \code{\link{airsis_createDataDataframe}}
 #' @examples
 #' \dontrun{
+#' library(PWFSLSmoke)
 #' initializeMazamaSpatialUtils()
-#' usfs_1013 <- airsis_createMonitorObject(20150301, 20150831, 'USFS', unitID='1013')
-#' monitor_leaflet(usfs_1013)
+#'
+#' usfs_1072 <- airsis_createMonitorObject(20200601, 20200620, 'USFS', unitID='1072')
+#' monitor_timeseriesPlot(usfs_1072)
 #' }
 
 airsis_createMonitorObject <- function(
-  startdate = strftime(lubridate::now(), "%Y010100", tz = "UTC"),
-  enddate = strftime(lubridate::now(), "%Y%m%d23", tz = "UTC"),
+  startdate = strftime(lubridate::now(tzone = "UTC"), "%Y010100", tz = "UTC"),
+  enddate = strftime(lubridate::now(tzone = "UTC"), "%Y%m%d23", tz = "UTC"),
   provider = NULL,
   unitID = NULL,
   clusterDiameter = 1000,
@@ -79,7 +81,8 @@ airsis_createMonitorObject <- function(
 
   logger.debug(" ----- airsis_createMonitorObject() ----- ")
 
-  # Sanity checks
+  # ----- Validate parameters --------------------------------------------------
+
   if ( is.null(provider) ) {
     logger.error("Required parameter 'provider' is missing")
     stop(paste0("Required parameter 'provider' is missing"))
@@ -101,6 +104,8 @@ airsis_createMonitorObject <- function(
     logger.error("Cannot parse 'enddate' with %d characters", enddateCount)
     stop(paste0("Cannot parse 'enddate' with ",enddateCount," characters"))
   }
+
+  # ----- Process data ---------------------------------------------------------
 
   # Read in AIRSIS .csv data
   fileString <- airsis_downloadData(startdate, enddate, provider, unitID, baseUrl)
@@ -132,23 +137,32 @@ airsis_createMonitorObject <- function(
 
   # Add clustering information to identify unique deployments
   logger.trace("Clustering ...")
-  tbl <- addClustering(tbl, lonVar='Longitude', latVar='Latitude', clusterDiameter=clusterDiameter)
+  tbl <- addClustering(
+    tbl,
+    lonVar = 'Longitude',
+    latVar = 'Latitude',
+    clusterDiameter = clusterDiameter
+  )
+
+  # ----- Create 'ws_monitor' object -------------------------------------------
 
   # Create 'meta' dataframe of site properties organized as monitorID-by-property
   # NOTE:  This step will create a uniformly named set of properties and will
   # NOTE:  add site-specific information like timezone, elevation, address, etc.
   logger.trace("Creating 'meta' dataframe ...")
-  meta <- airsis_createMetaDataframe(tbl, provider, unitID, 'AIRSIS',
-                                     existingMeta = existingMeta,
-                                     addGoogleMeta = addGoogleMeta,
-                                     addEsriMeta = addEsriMeta)
+  meta <- airsis_createMetaDataframe(
+    tbl, provider, unitID, 'AIRSIS',
+    existingMeta = existingMeta,
+    addGoogleMeta = addGoogleMeta,
+    addEsriMeta = addEsriMeta
+  )
 
   # Create 'data' dataframe of PM2.5 values organized as time-by-monitorID
   logger.trace("Creating 'data' dataframe ...")
   data <- airsis_createDataDataframe(tbl, meta)
 
   # Create the 'ws_monitor' object
-  ws_monitor <- list(meta=meta, data=data)
+  ws_monitor <- list(meta = meta, data = data)
   ws_monitor <- structure(ws_monitor, class = c("ws_monitor", "list"))
 
   # Reset all negative values that made it through QC to zero
@@ -157,6 +171,56 @@ airsis_createMonitorObject <- function(
     ws_monitor <- monitor_replaceData(ws_monitor, data < 0, 0)
   }
 
+  # ----- Return ---------------------------------------------------------------
+
   return(ws_monitor)
+
+}
+
+# ===== DEBUGGING ==============================================================
+
+if ( FALSE ) {
+
+  library(PWFSLSmoke)
+  initializeMazamaSpatialUtils()
+
+  logger.setLevel(TRACE)
+
+  # 2020 "ESAM Multi" format -- usfs.2072-5
+
+  startdate = MazamaCoreUtils::parseDatetime("2020-06-14", timezone = "UTC")
+  enddate = MazamaCoreUtils::parseDatetime("2020-06-20", timezone = "UTC")
+  provider = "usfs"
+  unitID = 1072
+  clusterDiameter = 1000
+  zeroMinimum = TRUE
+  baseUrl = "http://xxxx.airsis.com/vision/common/CSVExport.aspx?"
+  saveFile = NULL
+  existingMeta = NULL
+  addGoogleMeta = FALSE
+  addEsriMeta = FALSE
+
+  rm(ws_monitor)
+
+  # Now you can walk through the function
+
+  # Or just run it
+
+  ws_monitor <- airsis_createMonitorObject(
+    startdate = startdate,
+    enddate = enddate,
+    provider = provider,
+    unitID = unitID,
+    clusterDiameter = clusterDiameter,
+    zeroMinimum = zeroMinimum,
+    baseUrl = baseUrl,
+    saveFile = saveFile,
+    existingMeta = existingMeta,
+    addGoogleMeta = addGoogleMeta,
+    addEsriMeta = addEsriMeta
+  )
+
+  AirMonitorPlots::monitor_ggTimeseries(ws_monitor)
+
 
 }

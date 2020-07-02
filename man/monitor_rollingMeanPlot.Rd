@@ -4,11 +4,22 @@
 \alias{monitor_rollingMeanPlot}
 \title{Create Rolling Mean Plot}
 \usage{
-monitor_rollingMeanPlot(ws_monitor, monitorID = NULL, width = 3,
-  align = "center", data.thresh = 75, tlim = NULL, ylim = NULL,
-  localTime = TRUE, shadedNight = FALSE, aqiLines = TRUE,
-  gridHorizontal = FALSE, grid24hr = FALSE, grid3hr = FALSE,
-  showLegend = TRUE)
+monitor_rollingMeanPlot(
+  ws_monitor,
+  monitorID = NULL,
+  width = 3,
+  align = "center",
+  data.thresh = 75,
+  tlim = NULL,
+  ylim = NULL,
+  localTime = TRUE,
+  shadedNight = FALSE,
+  aqiLines = TRUE,
+  gridHorizontal = FALSE,
+  grid24hr = FALSE,
+  grid3hr = FALSE,
+  showLegend = TRUE
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -75,6 +86,8 @@ a specific monitor.
 This function attempts to provide a 'publication ready' rolling mean plot.
 }
 \examples{
+library(PWFSLSmoke)
+
 N_M <- Northwest_Megafires
 Roseburg <- monitor_subset(N_M, tlim = c(20150821, 20150831),
                            monitorIDs = c("410190002_01"))

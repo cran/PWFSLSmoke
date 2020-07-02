@@ -4,8 +4,13 @@
 \alias{monitor_dailyStatistic}
 \title{Calculate daily statistics}
 \usage{
-monitor_dailyStatistic(ws_monitor, FUN = get("mean"),
-  dayStart = "midnight", na.rm = TRUE, minHours = 18)
+monitor_dailyStatistic(
+  ws_monitor,
+  FUN = get("mean"),
+  dayStart = "midnight",
+  na.rm = TRUE,
+  minHours = 18
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -42,7 +47,7 @@ The returned \emph{ws_monitor} object has a daily time axis where each
 \code{datetime} is set to the beginning of each day, 00:00:00, local time.
 }
 \examples{
-\dontrun{
+\donttest{
 N_M <- monitor_subset(Northwest_Megafires, tlim=c(20150801,20150831))
 WinthropID <- '530470010_01'
 TwispID <- '530470009_01'

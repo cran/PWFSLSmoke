@@ -4,9 +4,14 @@
 \alias{monitor_writeCurrentStatusGeoJSON}
 \title{Write current monitor data to geojson file}
 \usage{
-monitor_writeCurrentStatusGeoJSON(ws_monitor, filename,
-  datetime = lubridate::now("UTC"), properties = NULL,
-  propertyNames = NULL, metadataList = list())
+monitor_writeCurrentStatusGeoJSON(
+  ws_monitor,
+  filename,
+  datetime = lubridate::now(tzone = "UTC"),
+  properties = NULL,
+  propertyNames = NULL,
+  metadataList = list()
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object.}
@@ -40,13 +45,17 @@ Writes a geoJSON file containing current monitor data. For details on what is
 included, see \code{\link{monitor_getCurrentStatus}}.
 }
 \examples{
-\dontrun{
+\donttest{
+library(PWFSLSmoke)
+
 wa <-
   monitor_loadLatest() \%>\%
   monitor_subset(stateCodes = "WA")
-wa_current_geojson <- monitor_writeCurrentStatusGeoJSON(wa, "wa_monitors.geojson")
+
+geojson_file <- tempfile(fileext = ".geojson")
+wa_current_geojson <- monitor_writeCurrentStatusGeoJSON(wa, geojson_file)
 wa_current_list <- jsonlite::fromJSON(wa_current_geojson)
-wa_spdf <- rgdal::readOGR(dsn = "wa_monitors.geojson", layer = "OGRGeoJSON")
+wa_spdf <- rgdal::readOGR(dsn = geojson_file)
 map("state", "washington")
 points(wa_spdf)
 }

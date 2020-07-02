@@ -4,8 +4,11 @@
 \alias{monitor_getCurrentStatus}
 \title{Get current status of monitors}
 \usage{
-monitor_getCurrentStatus(ws_monitor, endTime = NULL,
-  monitorURLBase = "http://tools.airfire.org/monitoring/v4/#!/?monitors=")
+monitor_getCurrentStatus(
+  ws_monitor,
+  endTime = NULL,
+  monitorURLBase = "http://tools.airfire.org/monitoring/v4/#!/?monitors="
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object.}
@@ -102,7 +105,9 @@ Each flag is listed below with its corresponding meaning:
 }
 
 \examples{
-\dontrun{
+\donttest{
+library(PWFSLSmoke)
+
 ws_monitor <- monitor_loadLatest() \%>\% monitor_subset(stateCodes = "WA")
 statusTbl <- monitor_getCurrentStatus(ws_monitor)
 }

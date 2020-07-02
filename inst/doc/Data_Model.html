@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="Mazama Science" />
 
+<meta name="date" content="2020-02-12" />
 
 <title>Data Model</title>
 
@@ -95,7 +96,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -116,9 +117,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -287,7 +285,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -302,7 +301,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Data Model</h1>
 <h4 class="author">Mazama Science</h4>
-<h4 class="date">4/3/2019</h4>
+<h4 class="date">2020-02-12</h4>
 
 
 
@@ -343,7 +342,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>These additional columns of information are much more variable and, depending on the source of data, may include many missing values.</p>
 <p>It is important to note that the <code>monitorID</code> acts as a unique key that connects data with metadata. The <code>monitorID</code> is used for column names in the <code>data</code> dataframe and for row names in the <code>meta</code> dataframe. So the following will always be true:</p>
 <pre><code>rownames(ws_monitor$meta) == ws_monitor$meta$monitorID
-colnames(ws_monitor$data) == c('datetime',ws_monitor$meta$monitorID)</code></pre>
+colnames(ws_monitor$data) == c('datetime', ws_monitor$meta$monitorID)</code></pre>
 <p><strong>Example 1: Exploring <code>ws_monitor</code> Objects</strong></p>
 <p>We will use the built-in “Northwest_Megafires” dataset and the <code>monitor_subset()</code> function to subset a <code>ws_monitor</code> object which we can then explore.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">suppressPackageStartupMessages</span>(<span class="kw">library</span>(PWFSLSmoke))</a>
@@ -351,9 +350,9 @@ colnames(ws_monitor$data) == c('datetime',ws_monitor$meta$monitorID)</code></pre
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># Get some airnow data for Washington state in the summer of 2015</span></a>
 <a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># </span><span class="al">NOTE</span><span class="co">:  'tlim' is interpreted as UTC unless we specify 'timezone' </span></a>
 <a class="sourceLine" id="cb2-5" data-line-number="5">N_M &lt;-<span class="st"> </span><span class="kw">monitor_subset</span>(Northwest_Megafires,</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">                      <span class="dt">tlim=</span><span class="kw">c</span>(<span class="dv">20150801</span>,<span class="dv">20150831</span>),</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">                      <span class="dt">timezone=</span><span class="st">&quot;America/Los_Angeles&quot;</span>)</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">WA &lt;-<span class="st"> </span><span class="kw">monitor_subset</span>(N_M, <span class="dt">stateCodes=</span><span class="st">'WA'</span>)</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">                      <span class="dt">tlim =</span> <span class="kw">c</span>(<span class="dv">20150801</span>, <span class="dv">20150831</span>),</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">                      <span class="dt">timezone =</span> <span class="st">&quot;America/Los_Angeles&quot;</span>)</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">WA &lt;-<span class="st"> </span><span class="kw">monitor_subset</span>(N_M, <span class="dt">stateCodes =</span> <span class="st">'WA'</span>)</a>
 <a class="sourceLine" id="cb2-9" data-line-number="9"></a>
 <a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co"># 'ws_monitor' objects can be identified by their class</span></a>
 <a class="sourceLine" id="cb2-11" data-line-number="11"><span class="kw">class</span>(WA)</a></code></pre></div>
@@ -362,54 +361,46 @@ colnames(ws_monitor$data) == c('datetime',ws_monitor$meta$monitorID)</code></pre
 <a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">dim</span>(WA<span class="op">$</span>meta)</a></code></pre></div>
 <pre><code>## [1] 55 19</code></pre>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">rownames</span>(WA<span class="op">$</span>meta)</a></code></pre></div>
-<pre><code>##  [1] &quot;530330017_01&quot; &quot;530330080_01&quot; &quot;530050002_01&quot; &quot;530330024_01&quot;
-##  [5] &quot;530330057_01&quot; &quot;530332004_01&quot; &quot;530530029_01&quot; &quot;530530031_01&quot;
-##  [9] &quot;530610005_01&quot; &quot;530611007_01&quot; &quot;530630047_01&quot; &quot;530670013_01&quot;
-## [13] &quot;530531018_01&quot; &quot;530272002_01&quot; &quot;530310003_01&quot; &quot;530730015_01&quot;
-## [17] &quot;530251002_01&quot; &quot;530650004_01&quot; &quot;530010003_01&quot; &quot;530750006_01&quot;
-## [21] &quot;530750003_01&quot; &quot;530331011_01&quot; &quot;530210002_01&quot; &quot;530330037_01&quot;
-## [25] &quot;530710005_01&quot; &quot;530750005_01&quot; &quot;530150015_01&quot; &quot;530470009_01&quot;
-## [29] &quot;530370002_01&quot; &quot;530090013_01&quot; &quot;530610020_01&quot; &quot;530070010_01&quot;
-## [33] &quot;530770015_01&quot; &quot;530650002_01&quot; &quot;530470010_01&quot; &quot;530770009_01&quot;
-## [37] &quot;530570015_01&quot; &quot;530130002_01&quot; &quot;530030004_01&quot; &quot;530110022_01&quot;
-## [41] &quot;530579999_01&quot; &quot;530639997_01&quot; &quot;530299999_01&quot; &quot;530639996_01&quot;
-## [45] &quot;530410004_01&quot; &quot;530770016_01&quot; &quot;530090015_01&quot; &quot;530450007_01&quot;
-## [49] &quot;530470013_01&quot; &quot;530570011_01&quot; &quot;530350007_01&quot; &quot;530070011_01&quot;
-## [53] &quot;530330030_01&quot; &quot;530110024_01&quot; &quot;530090017_01&quot;</code></pre>
+<pre><code>##  [1] &quot;530330017_01&quot; &quot;530330080_01&quot; &quot;530050002_01&quot; &quot;530330024_01&quot; &quot;530330057_01&quot;
+##  [6] &quot;530332004_01&quot; &quot;530530029_01&quot; &quot;530530031_01&quot; &quot;530610005_01&quot; &quot;530611007_01&quot;
+## [11] &quot;530630047_01&quot; &quot;530670013_01&quot; &quot;530531018_01&quot; &quot;530272002_01&quot; &quot;530310003_01&quot;
+## [16] &quot;530730015_01&quot; &quot;530251002_01&quot; &quot;530650004_01&quot; &quot;530010003_01&quot; &quot;530750006_01&quot;
+## [21] &quot;530750003_01&quot; &quot;530331011_01&quot; &quot;530210002_01&quot; &quot;530330037_01&quot; &quot;530710005_01&quot;
+## [26] &quot;530750005_01&quot; &quot;530150015_01&quot; &quot;530470009_01&quot; &quot;530370002_01&quot; &quot;530090013_01&quot;
+## [31] &quot;530610020_01&quot; &quot;530070010_01&quot; &quot;530770015_01&quot; &quot;530650002_01&quot; &quot;530470010_01&quot;
+## [36] &quot;530770009_01&quot; &quot;530570015_01&quot; &quot;530130002_01&quot; &quot;530030004_01&quot; &quot;530110022_01&quot;
+## [41] &quot;530579999_01&quot; &quot;530639997_01&quot; &quot;530299999_01&quot; &quot;530639996_01&quot; &quot;530410004_01&quot;
+## [46] &quot;530770016_01&quot; &quot;530090015_01&quot; &quot;530450007_01&quot; &quot;530470013_01&quot; &quot;530570011_01&quot;
+## [51] &quot;530350007_01&quot; &quot;530070011_01&quot; &quot;530330030_01&quot; &quot;530110024_01&quot; &quot;530090017_01&quot;</code></pre>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">colnames</span>(WA<span class="op">$</span>meta)</a></code></pre></div>
-<pre><code>##  [1] &quot;monitorID&quot;             &quot;longitude&quot;            
-##  [3] &quot;latitude&quot;              &quot;elevation&quot;            
-##  [5] &quot;timezone&quot;              &quot;countryCode&quot;          
-##  [7] &quot;stateCode&quot;             &quot;siteName&quot;             
-##  [9] &quot;agencyName&quot;            &quot;countyName&quot;           
-## [11] &quot;msaName&quot;               &quot;monitorType&quot;          
-## [13] &quot;siteID&quot;                &quot;instrumentID&quot;         
-## [15] &quot;aqsID&quot;                 &quot;pwfslID&quot;              
-## [17] &quot;pwfslDataIngestSource&quot; &quot;telemetryAggregator&quot;  
+<pre><code>##  [1] &quot;monitorID&quot;             &quot;longitude&quot;             &quot;latitude&quot;             
+##  [4] &quot;elevation&quot;             &quot;timezone&quot;              &quot;countryCode&quot;          
+##  [7] &quot;stateCode&quot;             &quot;siteName&quot;              &quot;agencyName&quot;           
+## [10] &quot;countyName&quot;            &quot;msaName&quot;               &quot;monitorType&quot;          
+## [13] &quot;siteID&quot;                &quot;instrumentID&quot;          &quot;aqsID&quot;                
+## [16] &quot;pwfslID&quot;               &quot;pwfslDataIngestSource&quot; &quot;telemetryAggregator&quot;  
 ## [19] &quot;telemetryUnitID&quot;</code></pre>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co"># Examine the 'data' dataframe</span></a>
 <a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw">dim</span>(WA<span class="op">$</span>data)</a></code></pre></div>
 <pre><code>## [1] 721  56</code></pre>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">colnames</span>(WA<span class="op">$</span>data)</a></code></pre></div>
-<pre><code>##  [1] &quot;datetime&quot;     &quot;530330017_01&quot; &quot;530330080_01&quot; &quot;530050002_01&quot;
-##  [5] &quot;530330024_01&quot; &quot;530330057_01&quot; &quot;530332004_01&quot; &quot;530530029_01&quot;
-##  [9] &quot;530530031_01&quot; &quot;530610005_01&quot; &quot;530611007_01&quot; &quot;530630047_01&quot;
-## [13] &quot;530670013_01&quot; &quot;530531018_01&quot; &quot;530272002_01&quot; &quot;530310003_01&quot;
-## [17] &quot;530730015_01&quot; &quot;530251002_01&quot; &quot;530650004_01&quot; &quot;530010003_01&quot;
-## [21] &quot;530750006_01&quot; &quot;530750003_01&quot; &quot;530331011_01&quot; &quot;530210002_01&quot;
-## [25] &quot;530330037_01&quot; &quot;530710005_01&quot; &quot;530750005_01&quot; &quot;530150015_01&quot;
-## [29] &quot;530470009_01&quot; &quot;530370002_01&quot; &quot;530090013_01&quot; &quot;530610020_01&quot;
-## [33] &quot;530070010_01&quot; &quot;530770015_01&quot; &quot;530650002_01&quot; &quot;530470010_01&quot;
-## [37] &quot;530770009_01&quot; &quot;530570015_01&quot; &quot;530130002_01&quot; &quot;530030004_01&quot;
-## [41] &quot;530110022_01&quot; &quot;530579999_01&quot; &quot;530639997_01&quot; &quot;530299999_01&quot;
-## [45] &quot;530639996_01&quot; &quot;530410004_01&quot; &quot;530770016_01&quot; &quot;530090015_01&quot;
-## [49] &quot;530450007_01&quot; &quot;530470013_01&quot; &quot;530570011_01&quot; &quot;530350007_01&quot;
-## [53] &quot;530070011_01&quot; &quot;530330030_01&quot; &quot;530110024_01&quot; &quot;530090017_01&quot;</code></pre>
+<pre><code>##  [1] &quot;datetime&quot;     &quot;530330017_01&quot; &quot;530330080_01&quot; &quot;530050002_01&quot; &quot;530330024_01&quot;
+##  [6] &quot;530330057_01&quot; &quot;530332004_01&quot; &quot;530530029_01&quot; &quot;530530031_01&quot; &quot;530610005_01&quot;
+## [11] &quot;530611007_01&quot; &quot;530630047_01&quot; &quot;530670013_01&quot; &quot;530531018_01&quot; &quot;530272002_01&quot;
+## [16] &quot;530310003_01&quot; &quot;530730015_01&quot; &quot;530251002_01&quot; &quot;530650004_01&quot; &quot;530010003_01&quot;
+## [21] &quot;530750006_01&quot; &quot;530750003_01&quot; &quot;530331011_01&quot; &quot;530210002_01&quot; &quot;530330037_01&quot;
+## [26] &quot;530710005_01&quot; &quot;530750005_01&quot; &quot;530150015_01&quot; &quot;530470009_01&quot; &quot;530370002_01&quot;
+## [31] &quot;530090013_01&quot; &quot;530610020_01&quot; &quot;530070010_01&quot; &quot;530770015_01&quot; &quot;530650002_01&quot;
+## [36] &quot;530470010_01&quot; &quot;530770009_01&quot; &quot;530570015_01&quot; &quot;530130002_01&quot; &quot;530030004_01&quot;
+## [41] &quot;530110022_01&quot; &quot;530579999_01&quot; &quot;530639997_01&quot; &quot;530299999_01&quot; &quot;530639996_01&quot;
+## [46] &quot;530410004_01&quot; &quot;530770016_01&quot; &quot;530090015_01&quot; &quot;530450007_01&quot; &quot;530470013_01&quot;
+## [51] &quot;530570011_01&quot; &quot;530350007_01&quot; &quot;530070011_01&quot; &quot;530330030_01&quot; &quot;530110024_01&quot;
+## [56] &quot;530090017_01&quot;</code></pre>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co"># This should always be true</span></a>
 <a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw">all</span>(<span class="kw">rownames</span>(WA<span class="op">$</span>meta) <span class="op">==</span><span class="st"> </span><span class="kw">colnames</span>(WA<span class="op">$</span>data[,<span class="op">-</span><span class="dv">1</span>]))</a></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p><strong>Example 2: Manipulating <code>ws_monitor</code> Objects</strong></p>
-<p>The <strong>PWFSLSmoke</strong> package has numerous functions that can work with <code>ws_monitor</code> objects, all of which begin with <code>monitor_</code>. If you need to do something that the package functions do not provide you can manipulate <code>ws_monitor</code> objects directly as long as you retain the structure of the data model.</p>
+<p>The <strong>PWFSLSmoke</strong> package has numerous functions that can work with <code>ws_monitor</code> objects, all of which begin with <code>monitor_</code>. If you need to do something that the package functions do not provide, you can manipulate <code>ws_monitor</code> objects directly as long as you retain the structure of the data model.</p>
 <p>Functions that accept and return <code>ws_monitor</code> objects include:</p>
 <ul>
 <li><code>monitor_aqi()</code></li>
@@ -428,16 +419,17 @@ colnames(ws_monitor$data) == c('datetime',ws_monitor$meta$monitorID)</code></pre
 <li><code>monitor_trim()</code></li>
 </ul>
 <p>These functions can be used with the <strong>magrittr</strong> package <code>%&gt;%</code> pipe as in the following example:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co"># Calculate daily means for the Methow from monitors in Twisp and Winthrop</span></a>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co"># Calculate daily means for the Methow Valley from monitors in Twisp and Winthrop</span></a>
 <a class="sourceLine" id="cb16-2" data-line-number="2">TwispID &lt;-<span class="st"> '530470009_01'</span></a>
 <a class="sourceLine" id="cb16-3" data-line-number="3">WinthropID &lt;-<span class="st"> '530470010_01'</span></a>
-<a class="sourceLine" id="cb16-4" data-line-number="4">Methow_Valley_JulyMeans &lt;-<span class="st"> </span>Northwest_Megafires <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="st">  </span><span class="kw">monitor_subset</span>(<span class="dt">monitorIDs=</span><span class="kw">c</span>(TwispID,WinthropID)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb16-6" data-line-number="6"><span class="st">  </span><span class="kw">monitor_collapse</span>(<span class="dt">monitorID=</span><span class="st">'MethowValley'</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb16-7" data-line-number="7"><span class="st">  </span><span class="kw">monitor_subset</span>(<span class="dt">tlim=</span><span class="kw">c</span>(<span class="dv">20150701</span>,<span class="dv">20150731</span>), <span class="dt">timezone=</span><span class="st">'America/Los_Angeles'</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb16-8" data-line-number="8"><span class="st">  </span><span class="kw">monitor_dailyStatistic</span>(<span class="dt">minHours=</span><span class="dv">18</span>)</a>
-<a class="sourceLine" id="cb16-9" data-line-number="9"><span class="co"># Look at the first week</span></a>
-<a class="sourceLine" id="cb16-10" data-line-number="10">Methow_Valley_JulyMeans<span class="op">$</span>data[<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>,]</a></code></pre></div>
+<a class="sourceLine" id="cb16-4" data-line-number="4">Methow_Valley_JulyMeans &lt;-<span class="st"> </span></a>
+<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="st">  </span>Northwest_Megafires <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-6" data-line-number="6"><span class="st">  </span><span class="kw">monitor_subset</span>(<span class="dt">monitorIDs =</span> <span class="kw">c</span>(TwispID,WinthropID)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-7" data-line-number="7"><span class="st">  </span><span class="kw">monitor_collapse</span>(<span class="dt">monitorID =</span> <span class="st">'MethowValley'</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-8" data-line-number="8"><span class="st">  </span><span class="kw">monitor_subset</span>(<span class="dt">tlim=</span><span class="kw">c</span>(<span class="dv">20150701</span>, <span class="dv">20150731</span>), <span class="dt">timezone =</span> <span class="st">'America/Los_Angeles'</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-9" data-line-number="9"><span class="st">  </span><span class="kw">monitor_dailyStatistic</span>(<span class="dt">minHours =</span> <span class="dv">18</span>)</a>
+<a class="sourceLine" id="cb16-10" data-line-number="10"><span class="co"># Look at the first week</span></a>
+<a class="sourceLine" id="cb16-11" data-line-number="11">Methow_Valley_JulyMeans<span class="op">$</span>data[<span class="dv">1</span><span class="op">:</span><span class="dv">7</span>,]</a></code></pre></div>
 <pre><code>##     datetime MethowValley
 ## 1 2015-07-01      5.06875
 ## 2 2015-07-02      5.45625
@@ -449,10 +441,10 @@ colnames(ws_monitor$data) == c('datetime',ws_monitor$meta$monitorID)</code></pre
 <p>The following code mixes use of package functions with direct manipulation of the <code>ws_monitor</code> object.</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="co"># Use special knowledge of AirNow IDs to subset airnow data for Spokane county monitors</span></a>
 <a class="sourceLine" id="cb18-2" data-line-number="2">SpokaneCountyIDs &lt;-<span class="st"> </span>N_M<span class="op">$</span>meta<span class="op">$</span>monitorID[stringr<span class="op">::</span><span class="kw">str_detect</span>(N_M<span class="op">$</span>meta<span class="op">$</span>monitorID, <span class="st">&quot;^53063&quot;</span>)]</a>
-<a class="sourceLine" id="cb18-3" data-line-number="3">Spokane &lt;-<span class="st"> </span><span class="kw">monitor_subset</span>(N_M, <span class="dt">monitorIDs=</span>SpokaneCountyIDs)</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3">Spokane &lt;-<span class="st"> </span><span class="kw">monitor_subset</span>(N_M, <span class="dt">monitorIDs =</span> SpokaneCountyIDs)</a>
 <a class="sourceLine" id="cb18-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb18-5" data-line-number="5"><span class="co"># Apply 3-hr rolling mean</span></a>
-<a class="sourceLine" id="cb18-6" data-line-number="6">Spokane_3hr &lt;-<span class="st"> </span><span class="kw">monitor_rollingMean</span>(Spokane, <span class="dv">3</span>, <span class="dt">align=</span><span class="st">&quot;center&quot;</span>)</a>
+<a class="sourceLine" id="cb18-6" data-line-number="6">Spokane_3hr &lt;-<span class="st"> </span><span class="kw">monitor_rollingMean</span>(Spokane, <span class="dv">3</span>, <span class="dt">align =</span> <span class="st">&quot;center&quot;</span>)</a>
 <a class="sourceLine" id="cb18-7" data-line-number="7"></a>
 <a class="sourceLine" id="cb18-8" data-line-number="8"><span class="co"># 1) Replace data columns with their squares (exponentiation is not supplied by the package)</span></a>
 <a class="sourceLine" id="cb18-9" data-line-number="9">Spokane_3hr_squared &lt;-<span class="st"> </span>Spokane_3hr</a>
@@ -465,7 +457,7 @@ colnames(ws_monitor$data) == c('datetime',ws_monitor$meta$monitorID)</code></pre
 <a class="sourceLine" id="cb18-16" data-line-number="16"></a>
 <a class="sourceLine" id="cb18-17" data-line-number="17"><span class="co"># 2) Check out the correlation between monitors (correlation is not supplied by the package)</span></a>
 <a class="sourceLine" id="cb18-18" data-line-number="18">data &lt;-<span class="st"> </span>Spokane_daily_3hr<span class="op">$</span>data[,<span class="op">-</span><span class="dv">1</span>] <span class="co"># exclude the 'datetime' column</span></a>
-<a class="sourceLine" id="cb18-19" data-line-number="19"><span class="kw">cor</span>(data, <span class="dt">use=</span><span class="st">'complete.obs'</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb18-19" data-line-number="19"><span class="kw">cor</span>(data, <span class="dt">use =</span> <span class="st">'complete.obs'</span>)</a></code></pre></div>
 <pre><code>##              530630047_01 530639997_01 530639996_01
 ## 530630047_01    1.0000000    0.9148673    0.9159997
 ## 530639997_01    0.9148673    1.0000000    0.9284175
@@ -475,6 +467,9 @@ colnames(ws_monitor$data) == c('datetime',ws_monitor$meta$monitorID)</code></pre
 <p>Best of luck exploring and understanding PM 2.5 values associated with wildfire smoke!</p>
 </div>
 
+
+
+<!-- code folding -->
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

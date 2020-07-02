@@ -4,11 +4,23 @@
 \alias{monitor_stamenmap}
 \title{Create a static map of ws_monitor object}
 \usage{
-monitor_stamenmap(ws_monitor, slice = get("max"),
-  breaks = AQI$breaks_24, colors = AQI$colors, width = 640,
-  height = 640, centerLon = NULL, centerLat = NULL, zoom = NULL,
-  maptype = "terrain", grayscale = FALSE, rasterBrick = NULL,
-  cex = par("cex") * 2, pch = 16, ...)
+monitor_stamenmap(
+  ws_monitor,
+  slice = get("max"),
+  breaks = AQI$breaks_24,
+  colors = AQI$colors,
+  width = 640,
+  height = 640,
+  centerLon = NULL,
+  centerLat = NULL,
+  zoom = NULL,
+  maptype = "terrain",
+  grayscale = FALSE,
+  rasterBrick = NULL,
+  cex = par("cex") * 2,
+  pch = 16,
+  ...
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -66,7 +78,9 @@ appropriate values will be calcualted using data from the
 \code{ws_monitor$meta} dataframe.
 }
 \examples{
-\dontrun{
+\donttest{
+library(PWFSLSmoke)
+
 N_M <- Northwest_Megafires
 # monitor_leaflet(N_M) # to identify Spokane monitorIDs
 Spokane <- monitor_subsetBy(N_M, stringr::str_detect(N_M$meta$monitorID,'^53063'))

@@ -4,13 +4,20 @@
 \alias{airsis_createMonitorObject}
 \title{Obain AIRSIS data and create ws_monitor object}
 \usage{
-airsis_createMonitorObject(startdate = strftime(lubridate::now(),
-  "\%Y010100", tz = "UTC"), enddate = strftime(lubridate::now(),
-  "\%Y\%m\%d23", tz = "UTC"), provider = NULL, unitID = NULL,
-  clusterDiameter = 1000, zeroMinimum = TRUE,
+airsis_createMonitorObject(
+  startdate = strftime(lubridate::now(tzone = "UTC"), "\%Y010100", tz = "UTC"),
+  enddate = strftime(lubridate::now(tzone = "UTC"), "\%Y\%m\%d23", tz = "UTC"),
+  provider = NULL,
+  unitID = NULL,
+  clusterDiameter = 1000,
+  zeroMinimum = TRUE,
   baseUrl = "http://xxxx.airsis.com/vision/common/CSVExport.aspx?",
-  saveFile = NULL, existingMeta = NULL, addGoogleMeta = FALSE,
-  addEsriMeta = FALSE, ...)
+  saveFile = NULL,
+  existingMeta = NULL,
+  addGoogleMeta = FALSE,
+  addEsriMeta = FALSE,
+  ...
+)
 }
 \arguments{
 \item{startdate}{desired start date (integer or character representing YYYYMMDD[HH])}
@@ -77,9 +84,11 @@ The downloaded CSV may be saved to a local file by providing an argument to the 
 }
 \examples{
 \dontrun{
+library(PWFSLSmoke)
 initializeMazamaSpatialUtils()
-usfs_1013 <- airsis_createMonitorObject(20150301, 20150831, 'USFS', unitID='1013')
-monitor_leaflet(usfs_1013)
+
+usfs_1072 <- airsis_createMonitorObject(20200601, 20200620, 'USFS', unitID='1072')
+monitor_timeseriesPlot(usfs_1072)
 }
 }
 \seealso{

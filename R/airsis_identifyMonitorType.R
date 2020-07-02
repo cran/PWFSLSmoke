@@ -40,7 +40,30 @@ airsis_identifyMonitorType <- function(df) {
 
   logger.debug(" ----- airsis_identifyMonitorType() ----- ")
 
-  #     Different header styles     -------------------------------------------
+  # ----- Different header styles ----------------------------------------------
+
+  # USFS_esamMulti, provider = "usfs", unitID=1072-5 (starting in June, 2020)
+                   ###"MasterTable_ID,Alias,Latitude,Longitude,Conc(mg/m3),Flow(l/m),AT(C),BP(PA),RHx(%),RHi(%),WS(M/S),WD(Deg),BV(V),Alarm,Oceaneering Unit Voltage,TimeStamp,PDate"
+  esamMulti_header <- "MasterTable_ID,Alias,Latitude,Longitude,Conc(ug/m3),Flow(l/m),AT(C),BP(PA),RHx(%),RHi(%),WS(M/S),WD(Deg),BV(V),Alarm,Oceaneering Unit Voltage,TimeStamp,PDate"
+  esamMulti_rawNames <- unlist(stringr::str_split(esamMulti_header, ','))
+  esamMulti_names <- make.names(esamMulti_rawNames)
+  # "64424513,USFS 1072,,,2,2.0,33.3,86107,1,13,2.6,175,14,,,6/14/2020 12:05:13 AM,6/14/2020 12:05:00 AM"
+  esamMulti_types <- 'ccdddddddddddidcc'
+
+  # ARB3_ebamPlusMulti, provider="arb3", unitID=1039 (starting December, 2019)
+  ebamPlusMulti_header <- "MasterTable_ID,Alias,Latitude,Longitude,ConcRT(\u00b5g/m3),ConcHR(\u00b5g/m3),Flow(lpm),WS(m/s),WD(Deg),AT(C),RH(%),BP(mmHg),FT(C),FRH(%),BV(V),PM,Status,TimeStamp,PDate"
+  ebamPlusMulti_rawNames <- unlist(stringr::str_split(ebamPlusMulti_header, ','))
+  ebamPlusMulti_names <- make.names(ebamPlusMulti_rawNames)
+  # "62195397,NPT1002,46.39985,-116.8035,,,,,,,,,,,,,,12/25/2019 11:55:38 PM,12/25/2019 11:56:00 PM"
+  # "62195464,NPT1002,,,000001,000003,16.7,00.0,000,003.6,066,743,014.6,023,12.3,0,00000,12/26/2019 12:05:29 AM,12/26/2019 12:05:00 AM"
+  ebamPlusMulti_types <- 'ccdddddddddddddcccc'
+
+  # ARB3_ebamMulti2, provider="arb3", unitID=1024 (starting December, 2019)
+  ebamMulti2_header <- "MasterTable_ID,Alias,Latitude,Longitude,ConcRT,ConcHR,ConcS(mg/m3),Flow,W/S,W/D,AT,RHx,BP(mmHg),RHi,Oceaneering Unit Voltage,FT,Status,Type,BV,TimeStamp,PDate"
+  ebamMulti2_rawNames <- unlist(stringr::str_split(ebamMulti2_header, ','))
+  ebamMulti2_names <- make.names(ebamMulti2_rawNames)
+  # "62288132,RX 1024,,,18.2,12.7,11.8,16.67,0.3,178,6.0,88,765.7,53,,14.9,Power Failure,PM 2.5,0,1/3/2020 5:05:13 PM,1/3/2020 5:05:00 PM"
+  ebamMulti2_types <- 'ccddddddddddddddccdcc'
 
   # ARB2_ebamMulti (Starting in August, 2018)
   ebamMulti_header <- "MasterTable_ID,Alias,Latitude,Longitude,COncRT,ConcHr,Flow,W/S,W/D,AT,RHx,RHi,BV,FT,Alarm,Oceaneering Unit Voltage,Type,TimeStamp,PDate"
@@ -61,7 +84,7 @@ airsis_identifyMonitorType <- function(df) {
   ebam_types <- 'ccddccddddddddddicccdcc'
 
   # provider=USFS, unitID=49, year=2010
-  bam1020_header <- "MasterTable_ID,Alias,Latitude,Longitude,Conc (\u00B5g/m3),Qtot (m3),WS (KTS),Ozone (ppb),RTM09 (mg3),RH (%),Ambient Temp (C),TimeStamp,PDate"
+  bam1020_header <- "MasterTable_ID,Alias,Latitude,Longitude,Conc (\u00b5g/m3),Qtot (m3),WS (KTS),Ozone (ppb),RTM09 (mg3),RH (%),Ambient Temp (C),TimeStamp,PDate"
   bam1020_rawNames <- unlist(stringr::str_split(bam1020_header, ','))
   bam1020_names <- make.names(bam1020_rawNames)
   bam1020_types <- 'ccdddddddddcc'
@@ -151,13 +174,30 @@ airsis_identifyMonitorType <- function(df) {
     rawNames <- unitid_bam1020_rawNames
     columnNames <- unitid_bam1020_names
     columnTypes <- unitid_bam1020_types
-
   # NOTE:  Now check for the older, pre-unitid headers in the same order
+  } else if ( dplyr::setequal(esamMulti_names, colNames) ) {
+    monitorType <- "ESAM"
+    monitorSubtype <- "MULTI"
+    rawNames <- esamMulti_rawNames
+    columnNames <- esamMulti_names
+    columnTypes <- esamMulti_types
   } else if ( dplyr::setequal(esam_names, colNames) ) {
     monitorType <- "ESAM"
     rawNames <- esam_rawNames
     columnNames <- esam_names
     columnTypes <- esam_types
+  } else if ( dplyr::setequal(ebamPlusMulti_names, colNames) ) {
+    monitorType <- "EBAM"
+    monitorSubtype <- "PLUS_MULTI"
+    rawNames <- ebamPlusMulti_rawNames
+    columnNames <- ebamPlusMulti_names
+    columnTypes <- ebamPlusMulti_types
+  } else if ( dplyr::setequal(ebamMulti2_names, colNames) ) {
+    monitorType <- "EBAM"
+    monitorSubtype <- "MULTI2"
+    rawNames <- ebamMulti2_rawNames
+    columnNames <- ebamMulti2_names
+    columnTypes <- ebamMulti2_types
   } else if ( dplyr::setequal(ebamMulti_names, colNames) ) {
     monitorType <- "EBAM"
     monitorSubtype <- "MULTI"
@@ -166,6 +206,7 @@ airsis_identifyMonitorType <- function(df) {
     columnTypes <- ebamMulti_types
   } else if ( dplyr::setequal(ebam_names, colNames) ) {
     monitorType <- "EBAM"
+    monitorSubtype <- "" # List "" -- no subtype for standard EBAM
     rawNames <- ebam_rawNames
     columnNames <- ebam_names
     columnTypes <- ebam_types

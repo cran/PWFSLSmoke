@@ -4,8 +4,12 @@
 \alias{monitor_getDailyMean}
 \title{Calculate daily means for a ws_monitor object}
 \usage{
-monitor_getDailyMean(ws_monitor, monitorID = NULL, startdate = NULL,
-  enddate = NULL)
+monitor_getDailyMean(
+  ws_monitor,
+  monitorID = NULL,
+  startdate = NULL,
+  enddate = NULL
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -27,6 +31,8 @@ Calculates and returns daily means for a monitor. If either
 returned for that date.
 }
 \examples{
+library(PWFSLSmoke)
+
 monitor_getDailyMean(PWFSLSmoke::Carmel_Valley,
                      startdate = "2016-08-01",
                      enddate = "2016-08-08")

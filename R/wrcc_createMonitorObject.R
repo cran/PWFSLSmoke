@@ -57,15 +57,17 @@
 #' @seealso \code{\link{wrcc_createDataDataframe}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
+#' library(PWFSLSmoke)
 #' initializeMazamaSpatialUtils()
+#'
 #' sm13 <- wrcc_createMonitorObject(20150301, 20150831, unitID = 'sm13')
 #' monitor_leaflet(sm13)
 #' }
 
 wrcc_createMonitorObject <- function(
-  startdate = strftime(lubridate::now(),"%Y010100",tz = "UTC"),
-  enddate = strftime(lubridate::now(),"%Y%m%d23",tz = "UTC"),
+  startdate = strftime(lubridate::now(tzone = "UTC"),"%Y010100",tz = "UTC"),
+  enddate = strftime(lubridate::now(tzone = "UTC"),"%Y%m%d23",tz = "UTC"),
   unitID = NULL,
   clusterDiameter = 1000,
   zeroMinimum = TRUE,
@@ -84,7 +86,7 @@ wrcc_createMonitorObject <- function(
   if ( FALSE ) {
 
     startdate <- 2019010100
-    enddate <- strftime(lubridate::now(),"%Y%m%d23",tz = "UTC")
+    enddate <- strftime(lubridate::now(tzone = "UTC"),"%Y%m%d23",tz = "UTC")
     unitID <- 's153'
     clusterDiameter <- 1000
     zeroMinimum <- TRUE

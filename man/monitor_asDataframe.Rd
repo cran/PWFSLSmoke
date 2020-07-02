@@ -4,8 +4,13 @@
 \alias{monitor_asDataframe}
 \title{Return Monitor Data in a Single Dataframe}
 \usage{
-monitor_asDataframe(ws_monitor, monitorID = NULL, extraColumns = NULL,
-  metaColumns = NULL, tlim = NULL)
+monitor_asDataframe(
+  ws_monitor,
+  monitorID = NULL,
+  extraColumns = NULL,
+  metaColumns = NULL,
+  tlim = NULL
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -22,7 +27,7 @@ monitor_asDataframe(ws_monitor, monitorID = NULL, extraColumns = NULL,
 A dataframe version of a \emph{ws_monitor} object.
 }
 \description{
-Creates a dataframe with data from a \emph{ws_monitor} object, essentially 
+Creates a dataframe with data from a \emph{ws_monitor} object, essentially
 \emph{flattening} the object. This is especially useful when monitoring data will be shared with
 non-R users working with spreadsheets. The returned dataframe will contain data from the monitor
 specified with \code{monitorID}.
@@ -51,12 +56,17 @@ to the vector of \code{extraColumns{}}
 The \code{tlim} argument is interpreted as localtime, not UTC.
 }
 \examples{
-\dontrun{
+\donttest{
+library(PWFSLSmoke)
+
 wa <- monitor_subset(Northwest_Megafires, stateCodes='WA')
+
 Omak_df <- monitor_asDataframe(wa, monitorID='530470013_01',
                                extraColumns=c('nowcast','dailyAvg'),
                                metaColumns=c('aqsID','siteName','timezone'),
                                tlim=c(20150801,20150901))
+
+dplyr::glimpse(Omak_df)
 }
 }
 \seealso{

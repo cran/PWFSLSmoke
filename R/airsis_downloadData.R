@@ -21,8 +21,8 @@
 #' }
 
 airsis_downloadData <- function(
-  startdate = strftime(lubridate::now(), "%Y0101", tz = "UTC"),
-  enddate = strftime(lubridate::now(), "%Y%m%d", tz = "UTC"),
+  startdate = strftime(lubridate::now(tzone = "UTC"), "%Y0101", tz = "UTC"),
+  enddate = strftime(lubridate::now(tzone = "UTC"), "%Y%m%d", tz = "UTC"),
   provider = 'USFS',
   unitID = NULL,
   baseUrl = "http://xxxx.airsis.com/vision/common/CSVExport.aspx?"
@@ -37,8 +37,8 @@ airsis_downloadData <- function(
   }
 
   # Get UTC times
-  starttime <- parseDatetime(startdate)
-  endtime <- parseDatetime(enddate)
+  starttime <- MazamaCoreUtils::parseDatetime(startdate, timezone = "UTC")
+  endtime <- MazamaCoreUtils::parseDatetime(enddate, timezone = "UTC")
 
   # Example URL:
   #   http://usfs.airsis.com/vision/common/CSVExport.aspx?uid=1026&StartDate=2016-02-03&EndDate=2016-02-03
@@ -62,5 +62,20 @@ airsis_downloadData <- function(
   # NOTE:  No further processing is needed.
 
   return(fileString)
+
+}
+
+# ===== DEBUGGING ==============================================================
+
+if ( FALSE ) {
+
+  startdate = strftime(lubridate::now(tzone = "UTC"), "%Y0101", tz = "UTC")
+  enddate = strftime(lubridate::now(tzone = "UTC"), "%Y%m%d", tz = "UTC")
+  provider = 'arb3'
+  unitID = 1024 # 1000-1049
+  baseUrl = "http://xxxx.airsis.com/vision/common/CSVExport.aspx?"
+
+  # Read in AIRSIS .csv data
+  fileString <- airsis_downloadData(startdate, enddate, provider, unitID, baseUrl)
 
 }

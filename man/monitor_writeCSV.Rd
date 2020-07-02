@@ -4,8 +4,13 @@
 \alias{monitor_writeCSV}
 \title{Write monitor data as CSV}
 \usage{
-monitor_writeCSV(ws_monitor, saveFile = NULL, metaOnly = FALSE,
-  dataOnly = FALSE, quietly = TRUE)
+monitor_writeCSV(
+  ws_monitor,
+  saveFile = NULL,
+  metaOnly = FALSE,
+  dataOnly = FALSE,
+  quietly = TRUE
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -40,8 +45,11 @@ This function wraps the \link{monitor_print} function but defaults
 to \code{quietly = FALSE}.
 }
 \examples{
+library(PWFSLSmoke)
+
 data("Carmel_Valley")
 Carmel_Valley <- monitor_subset(Carmel_Valley, tlim = c(20160802,20160803))
+
 monitor_print(Carmel_Valley)
 monitor_print(Carmel_Valley, metaOnly = TRUE)
 monitor_print(Carmel_Valley, dataOnly = TRUE)

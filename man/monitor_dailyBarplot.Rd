@@ -4,9 +4,19 @@
 \alias{monitor_dailyBarplot}
 \title{Create Daily Barplot}
 \usage{
-monitor_dailyBarplot(ws_monitor, monitorID = NULL, tlim = NULL,
-  minHours = 18, gridPos = "", gridCol = "black", gridLwd = 0.5,
-  gridLty = "solid", labels_x_nudge = 0, labels_y_nudge = 0, ...)
+monitor_dailyBarplot(
+  ws_monitor,
+  monitorID = NULL,
+  tlim = NULL,
+  minHours = 18,
+  gridPos = "",
+  gridCol = "black",
+  gridLwd = 0.5,
+  gridLty = "solid",
+  labels_x_nudge = 0,
+  labels_y_nudge = 0,
+  ...
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -51,12 +61,12 @@ The \code{labels_x_nudge} and \code{labels_y_nudge} can be used to tweak the
 date labeling. Units used are the same as those in the plot.
 }
 \examples{
-\dontrun{
+library(PWFSLSmoke)
+
 N_M <- monitor_subset(Northwest_Megafires, tlim = c(20150715, 20150930))
 main <- "Daily Average PM2.5 for Omak, WA"
 monitor_dailyBarplot(N_M, monitorID = "530470013_01", main = main,
                          labels_x_nudge = 1)
 addAQILegend(fill = rev(AQI$colors), pch = NULL)
-}
 }
 \keyword{ws_monitor}

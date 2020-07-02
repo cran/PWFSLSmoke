@@ -4,8 +4,13 @@
 \alias{monitor_dailyStatisticList}
 \title{Calculate Daily Statistics}
 \usage{
-monitor_dailyStatisticList(ws_monitor, FUN = get("mean"),
-  dayStart = "midnight", na.rm = TRUE, minHours = 18)
+monitor_dailyStatisticList(
+  ws_monitor,
+  FUN = get("mean"),
+  dayStart = "midnight",
+  na.rm = TRUE,
+  minHours = 18
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -36,12 +41,17 @@ will be in local time. This is desirable as it ensures proper date formatting in
 You should not attempt to reassemble a single \emph{ws_monitor} object from the elements in this list.
 }
 \examples{
-\dontrun{
+\donttest{
+library(PWFSLSmoke)
+
 airnow <- airnow_loadLatest()
 nw <- monitor_subset(airnow, stateCodes = c('WA','OR','ID','MT'))
 dailyList <- monitor_dailyStatisticList(nw)
+
 monitor_leaflet(dailyList[["America/Los_Angeles"]])
+
 monitor_leaflet(dailyList[["America/Boise"]])
+
 monitor_leaflet(dailyList[["America/Denver"]])
 }
 }

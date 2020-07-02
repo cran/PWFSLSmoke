@@ -50,17 +50,21 @@
 #' \href{https://haze.airfire.org/monitoring/latest/RData/}{https://haze.airfire.org/monitoring/latest/RData/}
 #' @seealso \code{\link{monitor_loadDaily}}
 #' @examples
-#' \dontrun{
-#' monitor_loadLatest() %>%
-#'   monitor_subset(stateCodes=CONUS) %>%
-#'   monitor_map()
+#' \donttest{
+#' library(PWFSLSmoke)
+#'
+#' monitor_loadAnnual(2018) %>%
+#'   monitor_subset(stateCodes = "WA", tlim = c(20180701, 20181001)) %>%
+#'   monitor_timeseriesPlot(style = 'gnats')
 #' }
 
-monitor_downloadAnnual <- function(year = NULL,
-                                   parameter='PM2.5',
-                                   baseUrl='https://haze.airfire.org/monitoring',
-                                   dataDir = "~/Data/monitoring/RData",
-                                   ...) {
+monitor_downloadAnnual <- function(
+  year = NULL,
+  parameter='PM2.5',
+  baseUrl='https://haze.airfire.org/monitoring',
+  dataDir = "~/Data/monitoring/RData",
+  ...
+) {
 
   # Validate parameters --------------------------------------------------------
 
@@ -79,7 +83,7 @@ monitor_downloadAnnual <- function(year = NULL,
   firstWrccYear <- 2010
   firstEpa88101Year <- 2008
   firstEpa88502Year <- 1998
-  lastYear <- lubridate::now() %>% lubridate::year() - 1
+  lastYear <- lubridate::now(tzone = "UTC") %>% lubridate::year() - 1
 
   # Rename baseUrl to avoid confusing R in the following function calls
   pwfslBase <- baseUrl

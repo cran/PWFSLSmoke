@@ -4,8 +4,13 @@
 \alias{monitor_subsetByDistance}
 \title{Subset ws_monitor Object by Distance from Target Location}
 \usage{
-monitor_subsetByDistance(ws_monitor, longitude = NULL, latitude = NULL,
-  radius = 50, count = NULL)
+monitor_subsetByDistance(
+  ws_monitor,
+  longitude = NULL,
+  latitude = NULL,
+  radius = 50,
+  count = NULL
+)
 }
 \arguments{
 \item{ws_monitor}{\emph{ws_monitor} object}
@@ -33,7 +38,9 @@ of monitors (or grid cells) returned may be less than the specified \code{count}
 \code{count} monitors (or grid cells) are found within the specified \code{radius} of the target location.
 }
 \examples{
-\dontrun{
+\donttest{
+library(PWFSLSmoke)
+
 # Napa Fires -- October, 2017
 ca <- airnow_loadAnnual(2017) \%>\%
   monitor_subset(tlim=c(20171001,20171101), stateCodes='CA')
@@ -42,7 +49,10 @@ Napa_Fires <- monitor_subsetByDistance(ca,
                                        longitude = Vallejo$meta$longitude,
                                        latitude = Vallejo$meta$latitude,
                                        radius = 50)
-monitor_leaflet(Napa_Fires)
+
+if ( interactive() ) {
+  monitor_leaflet(Napa_Fires)
+}
 }
 }
 \seealso{
