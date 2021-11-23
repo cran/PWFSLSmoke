@@ -42,7 +42,7 @@
 #' \item{\code{remove_Lat_zero = TRUE}}
 #' \item{\code{valid_Flow = c(16.7*0.95,16.7*1.05)}}
 #' \item{\code{valid_AT = c(-Inf,45)}}
-#' \item{\code{valid_RHi = c(-Inf,45)}}
+#' \item{\code{valid_RHi = c(-Inf,50)}}
 #' \item{\code{valid_Conc = c(-Inf,5.000)}}
 #' }
 #'
@@ -57,11 +57,16 @@
 #' @seealso \code{\link{airsis_createDataDataframe}}
 #' @examples
 #' \dontrun{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' library(PWFSLSmoke)
 #' initializeMazamaSpatialUtils()
 #'
 #' usfs_1072 <- airsis_createMonitorObject(20200601, 20200620, 'USFS', unitID='1072')
 #' monitor_timeseriesPlot(usfs_1072)
+#'
+#' }, silent = FALSE)
 #' }
 
 airsis_createMonitorObject <- function(
@@ -186,12 +191,12 @@ if ( FALSE ) {
 
   logger.setLevel(TRACE)
 
-  # 2020 "ESAM Multi" format -- usfs.2072-5
+  # 2021 "EBAM MULTI2_B" format -- usfs.1085
 
-  startdate = MazamaCoreUtils::parseDatetime("2020-06-14", timezone = "UTC")
-  enddate = MazamaCoreUtils::parseDatetime("2020-06-20", timezone = "UTC")
-  provider = "usfs"
-  unitID = 1072
+  startdate = strftime(lubridate::now(tzone = "UTC"), "%Y0101", tz = "UTC")
+  enddate = strftime(lubridate::now(tzone = "UTC"), "%Y%m%d", tz = "UTC")
+  provider = 'USFS'
+  unitID = 1085
   clusterDiameter = 1000
   zeroMinimum = TRUE
   baseUrl = "http://xxxx.airsis.com/vision/common/CSVExport.aspx?"
@@ -199,6 +204,7 @@ if ( FALSE ) {
   existingMeta = NULL
   addGoogleMeta = FALSE
   addEsriMeta = FALSE
+  ... = NULL
 
   rm(ws_monitor)
 

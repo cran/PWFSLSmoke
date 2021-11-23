@@ -45,10 +45,13 @@ WRCC parameters include the following:
 }
 
 Available WRCC RData and associated log files can be seen at:
-\href{https://haze.airfire.org/monitoring/WRCC/RData}{https://haze.airfire.org/monitoring/WRCC/RData}
+\href{https://haze.airfire.org/monitoring/WRCC/RData/}{https://haze.airfire.org/monitoring/WRCC/RData/}
 }
 \examples{
 \dontrun{
+# Fail gracefully if any resources are not available
+try({
+
 wrcc_loadAnnual(2017) \%>\%
   monitor_subset(stateCodes='MT', tlim=c(20170701,20170930)) \%>\%
   monitor_dailyStatistic() \%>\%
@@ -56,6 +59,8 @@ wrcc_loadAnnual(2017) \%>\%
   addAQIStackedBar()
   addAQILines()
   title("Montana 2017 -- WRCC Daily Average PM2.5")
+
+}, silent = FALSE)
 }
 }
 \seealso{

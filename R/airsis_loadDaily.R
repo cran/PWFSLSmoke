@@ -45,14 +45,19 @@
 #' }
 #'
 #' Avaialble AIRSIS RData and associated log files can be seen at:
-#' \href{https://haze.airfire.org/monitoring/AIRSIS/RData/latest}{https://haze.airfire.org/monitoring/AIRSIS/RData/latest}
+#' \href{https://haze.airfire.org/monitoring/AIRSIS/RData/latest/}{https://haze.airfire.org/monitoring/AIRSIS/RData/latest/}
 #' @seealso \code{\link{airsis_loadAnnual}}
 #' @seealso \code{\link{airsis_loadLatest}}
 #' @examples
 #' \dontrun{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' airsis_loadDaily() %>%
 #'   monitor_subset(stateCodes=CONUS) %>%
 #'   monitor_map()
+#'
+#' }, silent = FALSE)
 #' }
 
 airsis_loadDaily <- function(parameter = 'PM2.5',

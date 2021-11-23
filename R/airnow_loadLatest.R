@@ -45,14 +45,19 @@
 #' }
 #'
 #' Avaialble RData and associated log files can be seen at:
-#' \href{https://haze.airfire.org/monitoring/AirNow/RData/latest}{https://haze.airfire.org/monitoring/AirNow/RData/latest}
+#' \href{https://haze.airfire.org/monitoring/AirNow/RData/latest/}{https://haze.airfire.org/monitoring/AirNow/RData/latest/}
 #' @seealso \code{\link{airnow_loadAnnual}}
 #' @seealso \code{\link{airnow_loadDaily}}
 #' @examples
 #' \dontrun{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' airnow_loadLatest() %>%
 #'   monitor_subset(stateCodes=CONUS) %>%
 #'   monitor_map()
+#'
+#' }, silent = FALSE)
 #' }
 
 airnow_loadLatest <- function(

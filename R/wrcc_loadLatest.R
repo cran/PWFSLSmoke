@@ -45,19 +45,26 @@
 #' }
 #'
 #' Avaialble RData and associated log files can be seen at:
-#' \href{https://haze.airfire.org/monitoring/WRCC/RData/latest}{https://haze.airfire.org/monitoring/WRCC/RData/latest}
+#' \href{https://haze.airfire.org/monitoring/WRCC/RData/latest/}{https://haze.airfire.org/monitoring/WRCC/RData/latest/}
 #' @seealso \code{\link{wrcc_loadAnnual}}
 #' @seealso \code{\link{wrcc_loadDaily}}
 #' @examples
 #' \dontrun{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' wrcc_loadLatest() %>%
 #'   monitor_subset(stateCodes=CONUS) %>%
 #'   monitor_map()
+#'
+#' }, silent = FALSE)
 #' }
 
-wrcc_loadLatest <- function(parameter = 'PM2.5',
-                            baseUrl = 'https://haze.airfire.org/monitoring/latest/RData',
-                            dataDir = NULL) {
+wrcc_loadLatest <- function(
+  parameter = 'PM2.5',
+  baseUrl = 'https://haze.airfire.org/monitoring/latest/RData',
+  dataDir = NULL
+) {
 
   # Validate parameter
   validParams <- c("PM2.5")

@@ -41,13 +41,18 @@ WRCC parameters include the following:
 }
 
 Avaialble WRCC RData and associated log files can be seen at:
-\href{https://haze.airfire.org/monitoring/WRCC/RData/latest}{https://haze.airfire.org/monitoring/WRCC/RData/latest}
+\href{https://haze.airfire.org/monitoring/WRCC/RData/latest/}{https://haze.airfire.org/monitoring/WRCC/RData/latest/}
 }
 \examples{
 \dontrun{
+# Fail gracefully if any resources are not available
+try({
+
 wrcc_loadDaily() \%>\%
   monitor_subset(stateCodes=CONUS) \%>\%
   monitor_map()
+
+}, silent = FALSE)
 }
 }
 \seealso{

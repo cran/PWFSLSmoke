@@ -1,38 +1,4 @@
 
-# ----- Example datasets ------------------------------------------------------
-
-#' Carmel Valley example dataset
-#'
-#' @docType data
-#' @keywords datasets
-#' @name Carmel_Valley
-#' @title Carmel Valley Example Dataset
-#' @format A list with two elements
-#' @description
-#' In August of 2016, the Soberanes fire in California burned along the Big Sur
-#' coast. It was at the time the most expensive wildifre in US history. This dataset contains
-#' PM2.5 monitoring data for the monitor in Carmel Valley which shows heavy smoke
-#' as well as strong diurnal cycles associated with sea breezes. Data are stored
-#' as a \emph{ws_monitor} object and are used in some examples in the package
-#' documentation.
-NULL
-
-#' Northwest_Megafires example dataset
-#'
-#' @docType data
-#' @keywords datasets
-#' @name Northwest_Megafires
-#' @title Northwest Megafires Example Dataset
-#' @format A list with two elements
-#' @description
-#' In the summer of 2015 Washington state had several catastrophic wildfires that led
-#' to many days of heavy smoke in eastern Washington, Oregon and northern Idaho.
-#' The Northwest_Megafires dataset contains AirNow ambient monitoring data for the
-#' Pacific Northwest from May 31 through November 01, 2015 (UTC). Data are stored
-#' as a \emph{ws_monitor} object and are used in many examples in the package
-#' documentation.
-NULL
-
 # ----- Internal Package State -------------------------------------------------
 
 pwfslSmokeEnv <- new.env(parent = emptyenv())
@@ -155,7 +121,7 @@ NULL
 #' AIRSIS provides access to data by unit type at URLs like:
 #'   http://usfs.airsis.com/vision/common/CSVExport.aspx?utid=38&StartDate=2017-11-06&EndDate=2017-11-07
 #'
-#' The \code{AIRSIS} objectis a list of lists. The element named \code{unitTypes} is itself
+#' The \code{AIRSIS} object is a list of lists. The element named \code{unitTypes} is itself
 #' a list of named unit types:
 #'
 #' Unit types include:

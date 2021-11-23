@@ -110,7 +110,7 @@ with data from many monitors at once.
 ## Available data
 
 The USFS AirFire group regularly processes monitoring data in support of their
-[Monitoring Website](https://tools.airfire.org/monitoring/v4#!/?category=PM2.5_nowcast&centerlat=42&centerlon=-95&zoom=4https://tools.airfire.org/monitoring/v4). 
+Monitoring Website at `tools.airfire.org/monitoring/v4`. 
 Pre-processed data files can be loaded from their servers by the following functions:
 
 * `~_load()` -- load data based on a start- and end-time
@@ -136,6 +136,8 @@ they can be chained together.
 ```{r library, echo = FALSE}
 suppressPackageStartupMessages({
   library(PWFSLSmoke)
+  
+  camp_fire <- Camp_Fire
 })
 ```
 
@@ -146,7 +148,7 @@ area.
 We would begin by creating a `camp_fire` *ws_monitor* object that has all the
 monitors in California for the period of interest:
 
-```{r Sacramento_1}
+```
 camp_fire <-
   monitor_loadAnnual(2018) %>%
   monitor_subset(stateCodes = 'CA') %>%
@@ -222,6 +224,8 @@ Sacramento_area %>%
   monitor_dailyBarplot(labels_x_nudge = 0.5,
                        labels_y_nudge = 15)
 ```
+
+----
 
 Hopefully, this short introduction will encourage you to start using this 
 package for your own analyses.

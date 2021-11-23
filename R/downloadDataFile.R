@@ -16,12 +16,14 @@
 #' The recommended directory for PWFSL monitoring data is
 #' \code{"~/data/monitoring/RData"}.
 
-downloadDataFile <- function(filename = NULL,
-                             baseUrl = NULL,
-                             dataDir = "~/data/monitoring/RData",
-                             ...) {
+downloadDataFile <- function(
+  filename = NULL,
+  baseUrl = NULL,
+  dataDir = "~/data/monitoring/RData",
+  ...
+) {
 
-  # Validate parameters --------------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
 
   if ( is.null(filename) ) {
     stop("Required parameter 'filename' is missing.")

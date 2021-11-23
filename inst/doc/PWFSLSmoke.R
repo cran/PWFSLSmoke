@@ -4,13 +4,9 @@ knitr::opts_chunk$set(echo = TRUE, fig.width = 7, fig.height = 5)
 ## ----library, echo = FALSE-----------------------------------------------------------------------------
 suppressPackageStartupMessages({
   library(PWFSLSmoke)
+  
+  camp_fire <- Camp_Fire
 })
-
-## ----Sacramento_1--------------------------------------------------------------------------------------
-camp_fire <-
-  monitor_loadAnnual(2018) %>%
-  monitor_subset(stateCodes = 'CA') %>%
-  monitor_subset(tlim = c(20181108, 20181123))
 
 ## ----Sacramento_2--------------------------------------------------------------------------------------
 monitor_leaflet(camp_fire)

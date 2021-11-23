@@ -88,6 +88,6 @@ To run them you should:
 ----
 
 This R package was created by [Mazama Science](http://mazamascience.com) and is 
-being funded by the USFS [AirFire Research Team](https://airfire.org).
+being funded by the USFS [AirFire Research Team](https://www.airfire.org).
 
 

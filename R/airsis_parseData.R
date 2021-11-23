@@ -25,10 +25,15 @@
 #' @importFrom rlang .data
 #' @examples
 #' \dontrun{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' library(PWFSLSmoke)
 #' fileString <- airsis_downloadData(20150701, 20151231, provider='USFS', unitID='1026')
 #' tbl <- airsis_parseData(fileString)
 #' summary(tbl)
+#'
+#' }, silent = FALSE)
 #' }
 
 airsis_parseData <- function(fileString) {
@@ -68,6 +73,8 @@ airsis_parseData <- function(fileString) {
       logger.trace("Parsing EBAM-Multi2 data ...")
     } else if ( monitorSubtype == "PLUS_MULTI" ) {
       logger.trace("Parsing EBAM-Plus-Multi data ...")
+    } else if ( monitorSubtype == "MULTI2_B" ) {
+      logger.trace("Parsing EBAM-Multi2_B data ...")
     } else {
       logger.trace("Parsing EBAM data ...")
     }
@@ -145,14 +152,14 @@ airsis_parseData <- function(fileString) {
   tbl$monitorName <- tbl$Alias
   tbl$monitorType <- monitorType
 
-  # Add monitor subtype for EBAM MULTI & MULTI2 seperation QC
+  # Add monitor subtype for EBAM MULTI & MULTI2 separation QC
   tbl$monitorSubtype <- monitorSubtype
 
   # ----- EBAM-Multi fixes -----------------------------------------------------
 
   if ( monitorType == "EBAM" ) {
 
-    if ( monitorSubtype == "MULTI" || monitorSubtype == "MULTI2") {
+    if ( monitorSubtype == "MULTI" || monitorSubtype == "MULTI2" || monitorSubtype == "MULTI2_B" ) {
 
       # HACK
       # arb2 UnitID=1044 in August, 2018 does not return a "Date.Time.GMT" column
@@ -176,7 +183,7 @@ airsis_parseData <- function(fileString) {
       }
 
       # NOTE:  EBAM MULTI2 provides "ConcHR" instead of "ConcHr"
-      if ( monitorSubtype == "MULTI2" ) {
+      if ( monitorSubtype == "MULTI2" || monitorSubtype == "MULTI2_B" ) {
         tbl$ConcHr <- tbl$ConcHR
       }
 
@@ -274,7 +281,11 @@ airsis_parseData <- function(fileString) {
   gpsMask <- !is.na(tbl$Longitude)
 
   if (monitorType == "EBAM") {
-    voltLabel <- "Sys..Volts"
+    if ( monitorSubtype == "MULTI2_B") {
+      voltLabel <- "Oceaneering.Unit.Voltage"
+    } else {
+      voltLabel <- "Sys..Volts"
+    }
   } else if (monitorType == "ESAM") {
     if ( monitorSubtype == "MULTI" ) {
       voltLabel <- "Oceaneering.Unit.Voltage"

@@ -41,7 +41,7 @@
 #' \item{\code{remove_Lat_zero = TRUE}}
 #' \item{\code{valid_Flow = c(16.7*0.95,16.7*1.05)}}
 #' \item{\code{valid_AT = c(-Inf,45)}}
-#' \item{\code{valid_RHi = c(-Inf,45)}}
+#' \item{\code{valid_RHi = c(-Inf,50)}}
 #' \item{\code{valid_Conc = c(-Inf,5000)}}
 #' }
 #'
@@ -58,11 +58,16 @@
 #'
 #' @examples
 #' \donttest{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' library(PWFSLSmoke)
 #' initializeMazamaSpatialUtils()
 #'
 #' sm13 <- wrcc_createMonitorObject(20150301, 20150831, unitID = 'sm13')
 #' monitor_leaflet(sm13)
+#'
+#' }, silent = FALSE)
 #' }
 
 wrcc_createMonitorObject <- function(
@@ -98,7 +103,7 @@ wrcc_createMonitorObject <- function(
 
   }
 
-  # ----- Validate Parameters --------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
 
   if ( is.null(unitID) ) {
     logger.error("Required parameter 'unitID' is missing")

@@ -30,10 +30,15 @@
 #'
 #' @examples
 #' \dontrun{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' library(PWFSLSmoke)
 #'
 #' tbl <- wrcc_createRawDataframe(20150701, 20150930, unitID = 'SM16')
 #' dplyr::glimpse(tbl)
+#'
+#' }, silent = FALSE)
 #' }
 #'
 #' @note The downloaded CSV may be saved to a local file by providing an argument to the \code{saveFile} parameter.
@@ -58,7 +63,7 @@ wrcc_createRawDataframe <- function(
 
   logger.debug(" ----- wrcc_createRawDatafram() ----- ")
 
-  # ----- Validate parameters ---------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
 
   if ( is.null(unitID) ) {
     logger.error("Required parameter 'unitID' is missing")

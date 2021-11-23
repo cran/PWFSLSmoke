@@ -73,7 +73,7 @@ valid data ranges as taken from \code{airsis_EBAMQualityControl()}:
 \item{\code{remove_Lat_zero = TRUE}}
 \item{\code{valid_Flow = c(16.7*0.95,16.7*1.05)}}
 \item{\code{valid_AT = c(-Inf,45)}}
-\item{\code{valid_RHi = c(-Inf,45)}}
+\item{\code{valid_RHi = c(-Inf,50)}}
 \item{\code{valid_Conc = c(-Inf,5.000)}}
 }
 
@@ -84,11 +84,16 @@ The downloaded CSV may be saved to a local file by providing an argument to the 
 }
 \examples{
 \dontrun{
+# Fail gracefully if any resources are not available
+try({
+
 library(PWFSLSmoke)
 initializeMazamaSpatialUtils()
 
 usfs_1072 <- airsis_createMonitorObject(20200601, 20200620, 'USFS', unitID='1072')
 monitor_timeseriesPlot(usfs_1072)
+
+}, silent = FALSE)
 }
 }
 \seealso{

@@ -88,10 +88,15 @@
 #'
 #' @examples
 #' \donttest{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' library(PWFSLSmoke)
 #'
 #' ws_monitor <- monitor_loadLatest() %>% monitor_subset(stateCodes = "WA")
 #' statusTbl <- monitor_getCurrentStatus(ws_monitor)
+#'
+#' }, silent = FALSE)
 #' }
 
 monitor_getCurrentStatus <- function(
@@ -102,7 +107,8 @@ monitor_getCurrentStatus <- function(
 
   logger.debug("----- monitor_getCurrentStatus() -----")
 
-  # Sanity checks --------------------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
+  
   logger.trace("Performing sanity checks on `ws_monitor` parameter.")
 
   if ( !monitor_isMonitor(ws_monitor) ) {

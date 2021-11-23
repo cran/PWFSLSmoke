@@ -47,11 +47,14 @@
 #' }
 #'
 #' Available AirNow RData and associated log files can be seen at:
-#' \href{https://haze.airfire.org/monitoring/AirNow/RData}{https://haze.airfire.org/monitoring/AirNow/RData}
+#' \href{https://haze.airfire.org/monitoring/AirNow/RData/}{https://haze.airfire.org/monitoring/AirNow/RData/}
 #' @seealso \code{\link{airnow_loadDaily}}
 #' @seealso \code{\link{airnow_loadLatest}}
 #' @examples
 #' \dontrun{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' airnow_loadAnnual(2017) %>%
 #'   monitor_subset(stateCodes='MT', tlim=c(20170701,20170930)) %>%
 #'   monitor_dailyStatistic() %>%
@@ -59,6 +62,8 @@
 #'   addAQIStackedBar()
 #'   addAQILines()
 #'   title("Montana 2017 -- AirNow Daily Average PM2.5")
+#'
+#' }, silent = FALSE)
 #' }
 
 airnow_loadAnnual <- function(year = NULL,
@@ -66,7 +71,7 @@ airnow_loadAnnual <- function(year = NULL,
                               baseUrl = 'https://haze.airfire.org/monitoring',
                               dataDir = NULL) {
 
-  # Validate parameters --------------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
 
   if ( is.null(year) ) {
     stop("Required parameter 'year' is missing.")

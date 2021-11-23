@@ -41,13 +41,18 @@ AIRSIS parameters include the following:
 }
 
 Avaialble RData and associated log files can be seen at:
-\href{https://haze.airfire.org/monitoring/AIRSIS/RData/latest}{https://haze.airfire.org/monitoring/AIRSIS/RData/latest}
+\href{https://haze.airfire.org/monitoring/AIRSIS/RData/latest/}{https://haze.airfire.org/monitoring/AIRSIS/RData/latest/}
 }
 \examples{
 \dontrun{
+# Fail gracefully if any resources are not available
+try({
+
 airsis_loadLatest() \%>\%
   monitor_subset(stateCodes=CONUS) \%>\%
   monitor_map()
+
+}, silent = FALSE)
 }
 }
 \seealso{

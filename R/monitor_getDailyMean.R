@@ -19,16 +19,20 @@
 #' @examples
 #' library(PWFSLSmoke)
 #'
-#' monitor_getDailyMean(PWFSLSmoke::Carmel_Valley,
-#'                      startdate = "2016-08-01",
-#'                      enddate = "2016-08-08")
+#' monitor_getDailyMean(
+#'   PWFSLSmoke::Carmel_Valley,
+#'   startdate = "2016-08-01",
+#'   enddate = "2016-08-08"
+#' )
 
-monitor_getDailyMean <- function(ws_monitor,
-                                 monitorID = NULL,
-                                 startdate = NULL,
-                                 enddate = NULL) {
+monitor_getDailyMean <- function(
+  ws_monitor,
+  monitorID = NULL,
+  startdate = NULL,
+  enddate = NULL
+) {
 
-  # Validate arguments ---------------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
 
   if ( !monitor_isMonitor(ws_monitor) )
     stop("Required parameter 'ws_monitor' is not a valid ws_monitor object.")

@@ -47,11 +47,14 @@
 #' }
 #'
 #' Available AIRSIS RData and associated log files can be seen at:
-#' \href{https://haze.airfire.org/monitoring/AIRSIS/RData}{https://haze.airfire.org/monitoring/AIRSIS/RData}
+#' \href{https://haze.airfire.org/monitoring/AIRSIS/RData/}{https://haze.airfire.org/monitoring/AIRSIS/RData/}
 #' @seealso \code{\link{airsis_loadDaily}}
 #' @seealso \code{\link{airsis_loadLatest}}
 #' @examples
 #' \dontrun{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' airsis_loadAnnual(2017) %>%
 #'   monitor_subset(stateCodes='MT', tlim=c(20170701,20170930)) %>%
 #'   monitor_dailyStatistic() %>%
@@ -59,6 +62,8 @@
 #'   addAQIStackedBar()
 #'   addAQILines()
 #'   title("Montana 2017 -- AIRSIS Daily Average PM2.5")
+#'
+#' }, silent = FALSE)
 #' }
 
 airsis_loadAnnual <- function(year = NULL,
@@ -66,7 +71,7 @@ airsis_loadAnnual <- function(year = NULL,
                               baseUrl = 'https://haze.airfire.org/monitoring',
                               dataDir = NULL) {
 
-  # Validate parameters --------------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
 
   if ( is.null(year) ) {
     stop("Required parameter 'year' is missing.")

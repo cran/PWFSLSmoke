@@ -36,12 +36,15 @@ to be much smaller, perhaps ~ 0.001.
 }
 \examples{
 \dontrun{
-ca <- loadLatest() \%>\% monitor_subset(stateCodes='CA')
-# Google map
-map <- monitor_esriMap(ca)
-addIcon("orangeFlame", ca$meta$longitude, ca$meta$latitude, map=map, expansion=0.1)
-# line map
-monitor_map(ca)
-addIcon("orangeFlame", ca$meta$longitude, ca$meta$latitude, expansion=0.002)
+library(PWFSLSmoke)
+
+monitor_map(Camp_Fire)
+
+addIcon(
+  "orangeFlame",
+  longitude = -121.437222,
+  latitude = 39.810278,
+  expansion = 0.003
+)
 }
 }

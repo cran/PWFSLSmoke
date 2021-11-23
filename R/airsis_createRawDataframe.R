@@ -39,6 +39,9 @@
 #'
 #' @examples
 #' \dontrun{
+#' # Fail gracefully if any resources are not available
+#' try({
+#'
 #' library(PWFSLSmoke)
 #'
 #' raw <- airsis_createRawDataframe(startdate = 20160901,
@@ -46,6 +49,8 @@
 #'                                  unitID = '1033')
 #' raw <- raw_enhance(raw)
 #' rawPlot_timeseries(raw, tlim = c(20160908,20160917))
+#'
+#' }, silent = FALSE)
 #' }
 #'
 
@@ -62,7 +67,7 @@ airsis_createRawDataframe <- function(
 
   logger.debug(" ----- airsis_createRawDataframe() ----- ")
 
-  # Validate parameters --------------------------------------------------------
+  # ----- Validate parameters --------------------------------------------------
 
   if ( is.null(provider) ) {
     logger.error("Required parameter 'provider' is missing")

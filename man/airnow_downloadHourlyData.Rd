@@ -20,7 +20,8 @@ Dataframe of AirNow hourly data.
 \description{
 The \url{https://airnowtech.org} site provides both air
 pollution monitoring data as well as monitoring site location metadata. This
-function retrieves a single, hourly data file and returns it as a dataframe.
+function retrieves a single, hourly data file and returns it as a dataframe
+which includes a monitor's site name and parameters monitored.
 }
 \note{
 As of 2016-12-27, it appears that hourly data are available only for
@@ -33,7 +34,12 @@ monitors in Myanmar, Sri Lanka, India and Nepal.
 }
 \examples{
 \dontrun{
+# Fail gracefully if any resources are not available
+try({
+
 df <- airnow_downloadHourlyData(2018070112)
+
+}, silent = FALSE)
 }
 }
 \seealso{
